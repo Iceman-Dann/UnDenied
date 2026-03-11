@@ -1,221 +1,117 @@
-# UnDenied - Fight Back Against Wrongful Official Letters
+<div align="center">
+  <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/scale-balanced.svg" width="80" alt="Scale of Justice" />
+  <h1>UnDenied</h1>
+  <h3>The AI-Powered Legal Translator & Appeal Strategist</h3>
+  <p><em>Official Submission for the <strong>Creator Colosseum Startup Competition</strong></em></p>
 
-🏆 **Award-winning project that helps people understand and appeal wrongful official letters**
-
-## 📋 Project Overview
-
-Every year, hundreds of millions of official letters are sent to ordinary people — insurance denials, eviction notices, benefits rejections, school suspensions, medical bills, credit disputes. These letters are intentionally written by lawyers to confuse people into giving up.
-
-**The shocking statistics:**
-- 📊 80% of people never appeal wrongful decisions
-- 🎯 Of those who do appeal, 80% win
-- 💔 Most denials are wrongful, but people give up not because they're wrong — because they couldn't understand the letter
-
-**Who gets hurt most:**
-- Low-income families
-- Elderly people  
-- Immigrants
-- Single mothers
-
-UnDenied is a comprehensive web application that empowers ordinary people to fight back against intimidating official letters.
-
-## 🚀 Features
-
-### 📄 Document Analyzer
-- AI-powered analysis of official letters
-- Plain-language explanations of legal jargon
-- Identification of appeal rights and deadlines
-- Personalized appeal strategy generation
-
-### 🎯 The Denial Machine
-- Interactive visualization of the systemic denial problem
-- Data-driven insights into denial patterns
-- Educational content about rights and procedures
-
-### 💡 Knowledge Center
-- Comprehensive rights database
-- Step-by-step appeal guides
-- Success stories and testimonials
-- Legal resource directory
-
-### 🛠 Technical Features
-- Modern, responsive web design
-- AI-powered document analysis
-- Interactive data visualizations
-- Secure user data handling
-- Cross-platform compatibility
-
-## 📁 Project Structure
-
-```
-UnDenied/
-├── 📂 src/                    # Main application files
-│   ├── index.html            # Landing page
-│   ├── annalyzer.html        # Document analyzer
-│   ├── TheDenialMachine.html # Data visualization
-│   ├── stories.html          # Success stories
-│   ├── knowrights.html       # Rights database
-│   ├── about.html            # About page
-│   ├── config.js             # Application configuration
-│   └── test-api*.html        # API testing tools
-├── 📂 assets/                 # Static resources
-│   ├── css/                  # Stylesheets
-│   ├── js/                   # JavaScript libraries
-│   ├── images/               # Images and icons
-│   └── fonts/                # Custom fonts
-├── 📂 server/                 # Backend server files
-│   ├── server.py             # Main Python server
-│   ├── start-server.py       # Server startup script
-│   └── start.bat             # Windows batch file
-├── 📂 docs/                   # Documentation
-│   ├── README.md             # This file
-│   ├── README-ANALYZER.md    # Analyzer documentation
-│   ├── SETUP.md              # Setup instructions
-│   └── QUICK-START.md        # Quick start guide
-├── 📂 scripts/                # Utility scripts
-├── 📂 tests/                  # Test files
-└── .env                      # Environment variables
-```
-
-## 🛠 Technologies Used
-
-### Frontend
-- **HTML5** - Semantic markup
-- **CSS3** - Modern styling with animations
-- **JavaScript (ES6+)** - Interactive functionality
-- **GSAP** - Advanced animations
-- **D3.js** - Data visualizations
-
-### Backend
-- **Python** - Server-side logic
-- **Flask/FastAPI** - Web framework
-- **Google Gemini API** - AI document analysis
-
-### Design
-- **Responsive Design** - Works on all devices
-- **Modern UI/UX** - User-friendly interface
-- **Accessibility** - WCAG compliant
-- **Performance** - Optimized loading
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.8+
-- Modern web browser
-- Google Gemini API key
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd UnDenied
-   ```
-
-2. **Set up environment**
-   ```bash
-   # Copy .env file and add your API key
-   cp .env.example .env
-   # Edit .env with your Gemini API key
-   ```
-
-3. **Start the server**
-   ```bash
-   # Windows
-   server\start.bat
-   
-   # Or manually:
-   python server/start-server.py
-   ```
-
-4. **Open in browser**
-   ```
-   http://localhost:8000/src/index.html
-   ```
-
-## 📖 Usage Guide
-
-### Using the Document Analyzer
-1. Navigate to the Analyzer page
-2. Upload your official letter (PDF, JPG, PNG)
-3. Wait for AI analysis
-4. Review plain-language explanation
-5. Follow personalized appeal steps
-
-### Understanding Your Rights
-1. Visit the Know Your Rights section
-2. Browse by letter type or jurisdiction
-3. Read step-by-step guides
-4. Access legal resources
-
-### Viewing Success Stories
-1. Explore the Stories section
-2. Filter by case type
-3. Read real appeal success examples
-4. Get inspired to take action
-
-## 🧪 Testing
-
-### API Testing
-- `test-api.html` - Basic API connectivity test
-- `test-api-v2.html` - Comprehensive API diagnostic tool
-
-### Manual Testing
-1. Test document upload and analysis
-2. Verify all page navigation
-3. Check responsive design on different devices
-4. Validate form submissions
-
-## 🔧 Configuration
-
-### Environment Variables
-Set these in your `.env` file:
-```
-GEMINI_API_KEY=your_google_gemini_api_key
-PORT=8000
-DEBUG=false
-```
-
-### Customization
-- Modify `src/config.js` for application settings
-- Update `assets/css/` for styling changes
-- Add new content in respective HTML files
-
-## 🏆 Impact & Recognition
-
-### Social Impact
-- 💪 Empowers vulnerable populations
-- ⚖️ Increases access to justice
-- 📚 Improves legal literacy
-- 🎯 Reduces wrongful denials
-
-### Technical Achievement
-- 🤖 Advanced AI integration
-- 📊 Interactive data visualization
-- 🎨 Modern web design
-- 🔒 Secure data handling
-
-## 🤝 Contributing
-
-We welcome contributions! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📞 Support
-
-For questions or support:
-- Check the documentation in `docs/`
-- Review `QUICK-START.md` for basic setup
-- Use the test tools to verify functionality
-
-## 📄 License
-
-This project is dedicated to public service. Please see license file for details.
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Status](https://img.shields.io/badge/Status-Beta-brightgreen.svg)]()
+  [![AI](https://img.shields.io/badge/AI-Google_Gemini-blue.svg)]()
+  [![Impact](https://img.shields.io/badge/Social_Good-High_Impact-ff69b4.svg)]()
+  
+  <br />
+</div>
 
 ---
 
-**Built with ❤️ for the people who need it most**
+## Executive Summary
+
+**UnDenied** is a revolutionary civic-tech startup that empowers ordinary people to fight back against confusing, jargon-filled official letters. By leveraging cutting-edge AI, we translate complex legalise into actionable, plain-language appeal strategies. We are levelling the playing field against billion-dollar corporations and bureaucratic machines.
+
+---
+
+## Required Competition Questionnaire 
+
+### What is your startup idea?
+**UnDenied** is a comprehensive web application and AI-powered legal analysis platform. When individuals receive intimidating official documents—such as insurance claim denials, eviction notices, medical bills, or benefits rejections—they can upload them to UnDenied. Our system instantly translates the complex legalese into plain language, highlights critical deadlines, and generates a personalized, step-by-step, actionable appeal strategy. 
+
+### What is the problem you are solving and why it matters?
+Every year, hundreds of millions of official letters are sent to individuals, intentionally drafted by lawyers to be as confusing as possible. This creates a massive "justice gap."
+- **The Data Reality:** 80% of people never appeal wrongful decisions. Yet, of the 20% who do appeal, **80% win their cases**.
+- **The Human Cost:** Most denials are inherently wrongful, but people surrender simply because they do not understand the letter. 
+- **The Victims:** The most vulnerable populations—low-income families, elderly individuals, immigrants, and single mothers—are disproportionately targeted by this systemic issue. 
+
+This bureaucratic intimidation tactics cost everyday people billions of dollars annually. We are solving a massive information asymmetry problem.
+
+### What is your solution and how does it work?
+UnDenied completely automates the legal discovery and appeal strategy pipeline for the average consumer, using our proprietary **Document Analyzer** powered by the Google Gemini API.
+
+**How the user flow works:**
+1. **Upload:** Users securely upload their official letters (PDF, JPG, PNG).
+2. **AI Analysis:** Our engine parses the document to identify the core determination, legal grounds, appeal rights, and hidden deadlines.
+3. **Translation:** The system outputs a jargon-free, plain-language explanation of what the letter actually means.
+4. **Actionable Strategy:** UnDenied generates a tailored, step-by-step tactical plan on how to fight back and win the appeal.
+
+We also feature **"The Denial Machine,"** an interactive data visualization platform exposing systemic denial trends, and a comprehensive **Knowledge Center** built with an award-winning, state-of-the-art cinematic web UI.
+
+### What is your basic execution or business plan describing how the idea could realistically be developed?
+Our execution plan is designed for high impact, low friction, and sustainable scalability:
+* **Phase 1: Proof of Concept & Validation (Current):** We have built a fully functional web prototype with live AI integration. Initially released as a free public-service tool to gather anonymized proprietary data on recurring denial patterns and build high user trust.
+* **Phase 2: Freemium B2C Model:** The core translation and strategy analysis will remain free. We will introduce premium features ($5-$10/report or a low-cost subscription tier) that auto-generate formatted, ready-to-mail appeal complaint drafts, handle direct physical mailing, and offer "Ask an Expert" human reviews.
+* **Phase 3: B2B & Enterprise Partnerships:** License our anonymized data and API to consumer advocacy groups, NGOs, labor unions, and legal aid clinics as a white-labeled tool. They can sponsor the platform to deploy it to their constituents at scale, providing us with recurring enterprise revenue.
+
+### Identification of your target users or market
+Our target market is the everyday consumer facing a bureaucratic wall. Specifically:
+- **Patients** fighting predatory medical debt or bad-faith health insurance denials.
+- **Tenants** navigating complex eviction threats, unfair fines, or lease disputes.
+- **Citizens** dealing with wrongful government benefit rejections (Unemployment, SNAP, Disability).
+
+**Total Addressable Market (TAM):** Virtually every adult in the US (and globally) will receive an unfair bureaucratic denial, medical bill, or confusing official notice in their lifetime. This is a multi-billion dollar unmet need in the legal-tech sector.
+
+---
+
+## The Proof: Why UnDenied Works
+
+```mermaid
+pie title The "Denial Machine" Reality
+    "Give Up (Intimidated by Jargon)" : 80
+    "Actually Appeal" : 20
+```
+
+```mermaid
+pie title Of the 20% Who Appeal...
+    "Win the Appeal" : 80
+    "Lose" : 20
+```
+
+*Our platform bridges that 80% gap by removing the intimidation factor.*
+
+---
+
+## Technical Implementation
+
+We don't just have an idea; we have functioning code. Our stack is modern, scalable, and built for speed.
+
+* **Frontend:** HTML5, CSS3, JavaScript (ES6+), GSAP (for cinematic 3D animations), D3.js (Interactive Data Viz).
+* **Backend:** Python Web Framework (Flask/FastAPI).
+* **AI Engine:** Google Gemini API for state-of-the-art NLP and document contextualization.
+* **Architecture:** Secure, responsive, cross-platform, WCAG accessibility compliant.
+
+### Public GitHub Repository
+**[Link to GitHub Repository]** *(Replace with actual link)*
+
+---
+
+## Pitch & Demo
+
+**Recommended Competition Materials:**
+- **[Watch our 5-Minute Pitch Video Here]** *(Replace with actual link)*
+- **[View our Figma Designs/Prototypes Here]** *(Replace with actual link)*
+
+---
+
+## Judging Criteria Alignment
+
+| Criteria | How UnDenied Excels |
+| :--- | :--- |
+| **Feasibility & Execution (25%)** | We have a working technical prototype integrating real AI (Gemini). It’s not just mockups. The business plan scales logic from free public service to B2B white-labeling. |
+| **Potential Impact (25%)** | Solves a universal, painful problem affecting millions of vulnerable people. Direct, measurable financial and emotional relief for users fighting wrongful denials. |
+| **Communication & Clarity (10%)** | Our pitch, this documentation, and the cinematic UI of the actual app are designed to communicate complex ideas simply—which is the exact mission of our product. |
+| **Effort & Work Ethic (40%)** | We hand-coded a sophisticated Vanilla JS/CSS cinematic UI without relying on heavy bloatware frameworks, integrated real AI architectures, and created a comprehensive business model. |
+
+---
+<div align="center">
+  <i>"They expect you to give up. We make sure you don't."</i>
+  <br><br>
+  <b>Built by Student Founders for the Creator Colosseum.</b>
+</div>
