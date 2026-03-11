@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Denial Machine — UnDenied</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b12;
+  --surface: #0d1420;
+  --surface2: #111827;
+  --border: #1c2840;
+  --text: #ede8dc;
+  --text-secondary: #7a8fa8;
+  --brass: #9a7b4f;
+  --brass-light: #c4a46b;
+  --navy: #162d5c;
+  --crimson: #8b1a1a;
+  --crimson-light: #c0392b;
+  --crimson-glow: rgba(192,57,43,0.15);
+  --green: #2d7a4f;
+  --green-light: #3daa6e;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4,h5,h6 { font-family: 'Cormorant Garamond', serif; }
+a { text-decoration: none; color: inherit; }
+button { background: none; border: none; font-family: inherit; color: inherit; cursor: pointer; }
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--border); }
+::-webkit-scrollbar-thumb { background: var(--brass); }
+
+/* ── NAVBAR ── */
+.navbar {
+  position: fixed; top: 0; left: 0; width: 100%; height: 68px;
+  padding: 0 56px; display: flex; justify-content: space-between;
+  align-items: center; z-index: 1000;
+  background: rgba(7,11,18,0.92);
+  backdrop-filter: blur(24px) saturate(1.6);
+  border-bottom: 1px solid rgba(28,40,64,0.9);
+}
+.nav-logo { font-family:'Cormorant Garamond',serif; font-size:22px; letter-spacing: 0.05em; }
+.nav-center { display:flex; gap:28px; }
+.nav-link {
+  font-size:11px; font-variant:small-caps; letter-spacing:.2em;
+  color:var(--text-secondary); transition:color .2s;
+  position:relative;
+}
+.nav-link:hover, .nav-link.active { color:var(--brass); }
+.nav-link.active::after {
+  content:''; position:absolute; bottom:-3px; left:0;
+  width:100%; height:1px; background:var(--brass);
+}
+.nav-cta {
+  background: var(--navy); border:1px solid rgba(154,123,79,.5);
+  color:var(--text); font-size:11px; letter-spacing:.12em; padding:12px 24px;
+  transition: all 0.25s;
+}
+.nav-cta:hover { background:#1d3e7a; border-color:var(--brass-light); }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 140px 56px 72px;
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.page-header::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 70% 70% at 65% 50%, rgba(139,26,26,0.07) 0%, transparent 65%);
+}
+.page-header::after {
+  content:''; position:absolute; top:0; left:0; width:100%; height:1px;
+  background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+  opacity: 0.4;
+}
+.header-eyebrow {
+  font-size:10px; text-transform:uppercase; letter-spacing:.28em;
+  color:var(--crimson); margin-bottom:18px;
+  display:flex; align-items:center; gap:14px;
+  animation: fadeSlideUp 0.7s ease both;
+}
+.header-eyebrow::before { content:''; width:32px; height:1px; background:var(--crimson); }
+.page-title {
+  font-size: clamp(56px, 9vw, 100px); line-height: 0.93;
+  color: var(--text); max-width: 680px;
+  animation: fadeSlideUp 0.7s 0.1s ease both;
+}
+.page-title em { font-style:italic; color:var(--crimson); }
+.page-subtitle {
+  font-size:15px; color:var(--text-secondary); line-height:1.75;
+  max-width: 480px; margin-top:24px;
+  animation: fadeSlideUp 0.7s 0.2s ease both;
+}
+.source-tag {
+  font-size:10px; color:var(--text-secondary); opacity:0.45;
+  letter-spacing:0.1em; margin-top:36px;
+  animation: fadeSlideUp 0.7s 0.3s ease both;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── NATIONAL STATS ── */
+.national-stats {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.nat-stat {
+  padding: 32px 36px; border-right: 1px solid var(--border);
+  position:relative; overflow:hidden;
+  transition: background 0.25s;
+  cursor: default;
+}
+.nat-stat:last-child { border-right:none; }
+.nat-stat:hover { background: rgba(15,21,32,0.9); }
+.nat-stat::before {
+  content:''; position:absolute; bottom:0; left:0;
+  width:0; height:2px; background:var(--brass);
+  transition: width 0.4s ease;
+}
+.nat-stat:hover::before { width:100%; }
+.nat-stat-label {
+  font-size:10px; text-transform:uppercase; letter-spacing:.22em;
+  color:var(--text-secondary); margin-bottom:8px;
+}
+.nat-stat-value {
+  font-family:'Cormorant Garamond',serif; font-size:34px;
+  color:var(--brass); line-height:1;
+}
+.nat-stat-value.red { color:var(--crimson-light); }
+.nat-stat-sub { font-size:11px; color:var(--text-secondary); margin-top:5px; opacity:.65; }
+
+/* ── MAIN LAYOUT ── */
+.main-content { display:grid; grid-template-columns:1fr 360px; min-height:700px; }
+
+/* ── MAP PANEL ── */
+.map-panel { padding:40px 36px; border-right:1px solid var(--border); }
+.map-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+.map-title { font-family:'Cormorant Garamond',serif; font-size:20px; }
+.map-controls { display:flex; gap:8px; align-items:center; }
+.map-mode-btn {
+  font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  padding:7px 14px; border:1px solid var(--border);
+  color:var(--text-secondary); transition:all .2s;
+}
+.map-mode-btn.active, .map-mode-btn:hover {
+  border-color:var(--brass); color:var(--brass); background:rgba(154,123,79,.08);
+}
+.legend-wrap { display:flex; flex-direction:column; gap:4px; min-width:130px; }
+.legend-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text-secondary); }
+.legend-bar {
+  height:6px;
+  background: linear-gradient(to right, #1a1f2e 0%, #4a0a0a 30%, #8b1a1a 65%, #c0392b 100%);
+}
+
+#us-map { width:100%; cursor:pointer; }
+.state-path {
+  fill: #1a1f2e; stroke:#080d16; stroke-width:0.6;
+  transition: fill 0.25s, opacity 0.2s, stroke 0.2s;
+}
+.state-path:hover { opacity:0.82; stroke:var(--brass-light); stroke-width:1.4; }
+.state-path.selected { stroke:var(--brass-light); stroke-width:2.2; filter:drop-shadow(0 0 6px rgba(196,164,107,0.4)); }
+.state-path.compare-1 { stroke:#3daa6e; stroke-width:2.2; }
+.state-path.compare-2 { stroke:#5b9bd5; stroke-width:2.2; }
+.state-path.dimmed { opacity:0.3; }
+
+.map-tooltip {
+  position:fixed; background:rgba(13,20,32,0.97);
+  border:1px solid var(--border); padding:14px 18px;
+  pointer-events:none; z-index:500; opacity:0;
+  transition:opacity .12s; min-width:190px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+.tooltip-state { font-family:'Cormorant Garamond',serif; font-size:20px; margin-bottom:3px; }
+.tooltip-rate { font-size:12px; color:var(--crimson-light); font-weight:500; }
+.tooltip-proc { font-size:11px; color:var(--text-secondary); margin-top:3px; }
+.tooltip-hint { font-size:10px; color:var(--brass); margin-top:6px; letter-spacing:.08em; }
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background:var(--surface); padding:36px 28px;
+  position:sticky; top:68px; height:calc(100vh - 68px);
+  overflow-y:auto; border-left:1px solid var(--border);
+}
+.detail-empty {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; height:100%; gap:12px; opacity:.35;
+  text-align:center;
+}
+.detail-empty-icon { font-family:'Cormorant Garamond',serif; font-size:52px; color:var(--brass); font-style:italic; }
+.detail-empty-text { font-size:12px; color:var(--text-secondary); line-height:1.6; }
+.detail-content { display:none; }
+.detail-content.active { display:block; animation: fadeSlideUp 0.4s ease both; }
+
+.detail-state-name { font-family:'Cormorant Garamond',serif; font-size:38px; line-height:1; }
+.detail-rate { font-size:62px; font-family:'Cormorant Garamond',serif; color:var(--crimson-light); line-height:1; margin-top:2px; }
+.detail-rate-label { font-size:10px; text-transform:uppercase; letter-spacing:.18em; color:var(--text-secondary); margin-bottom:20px; margin-top:3px; }
+.detail-divider { width:100%; height:1px; background:var(--border); margin:20px 0; }
+.detail-section-title { font-size:10px; text-transform:uppercase; letter-spacing:.22em; color:var(--brass); margin-bottom:14px; }
+
+.proc-item { margin-bottom:13px; }
+.proc-name { font-size:13px; color:var(--text); margin-bottom:5px; display:flex; justify-content:space-between; }
+.proc-pct { color:var(--crimson-light); }
+.proc-bar-bg { height:2px; background:var(--border); }
+.proc-bar-fill { height:2px; background:linear-gradient(90deg,var(--crimson),var(--crimson-light)); width:0; transition:width .9s cubic-bezier(.16,1,.3,1); }
+
+.insurer-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:9px 0; border-bottom:1px solid rgba(28,40,64,.7); font-size:13px;
+}
+.insurer-name { color:var(--text); }
+.insurer-rate { color:var(--crimson-light); font-weight:500; }
+
+.appeal-box {
+  background:rgba(26,58,107,0.18); border:1px solid rgba(154,123,79,.25); padding:18px;
+}
+.appeal-pct { font-family:'Cormorant Garamond',serif; font-size:52px; color:var(--brass); line-height:1; }
+.appeal-label { font-size:11px; color:var(--text-secondary); margin-top:3px; }
+
+/* Appeal meter */
+.appeal-meter { width:100%; height:4px; background:var(--border); margin-top:10px; }
+.appeal-meter-fill { height:4px; background:linear-gradient(90deg,var(--navy),var(--brass)); width:0; transition:width 1s ease; }
+
+/* ── COMPARE MODE ── */
+.compare-panel {
+  background:var(--surface2); border:1px solid var(--border);
+  padding:20px; margin-top:20px; display:none;
+}
+.compare-panel.active { display:block; animation: fadeSlideUp 0.35s ease both; }
+.compare-title { font-size:10px; text-transform:uppercase; letter-spacing:.2em; color:var(--brass); margin-bottom:14px; }
+.compare-row { display:flex; gap:10px; margin-bottom:10px; align-items:center; }
+.compare-state-pill {
+  flex:1; padding:8px 12px; border:1px solid var(--border);
+  font-size:12px; color:var(--text-secondary); display:flex;
+  justify-content:space-between; align-items:center;
+}
+.compare-state-pill.selected-1 { border-color:#3daa6e; color:#3daa6e; }
+.compare-state-pill.selected-2 { border-color:#5b9bd5; color:#5b9bd5; }
+.compare-bar-wrap { margin-bottom:8px; }
+.compare-label { font-size:11px; color:var(--text-secondary); margin-bottom:4px; display:flex; justify-content:space-between; }
+.compare-bar-track { height:6px; background:var(--border); position:relative; }
+.compare-bar-1 { height:6px; background:#3daa6e; position:absolute; top:0; left:0; transition:width 0.8s ease; }
+.compare-bar-2 { height:6px; background:#5b9bd5; position:absolute; top:0; left:0; transition:width 0.8s ease; margin-top:7px; }
+
+/* ── INSURER TABLE ── */
+.table-section { padding:72px 56px; border-top:1px solid var(--border); }
+.table-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:36px; }
+.table-eyebrow { font-size:10px; text-transform:uppercase; letter-spacing:.22em; color:var(--brass); margin-bottom:10px; }
+.table-title { font-family:'Cormorant Garamond',serif; font-size:40px; }
+.table-subtitle { font-size:12px; color:var(--text-secondary); max-width:260px; text-align:right; line-height:1.5; }
+
+.search-bar {
+  width:100%; padding:11px 16px; background:var(--surface);
+  border:1px solid var(--border); color:var(--text); font-size:13px;
+  font-family:'DM Sans',sans-serif; margin-bottom:24px;
+  transition:border-color .2s;
+}
+.search-bar:focus { outline:none; border-color:var(--brass); }
+.search-bar::placeholder { color:var(--text-secondary); }
+
+.denial-table { width:100%; border-collapse:collapse; }
+.denial-table th {
+  font-size:10px; text-transform:uppercase; letter-spacing:.2em;
+  color:var(--brass); padding:11px 14px; text-align:left;
+  border-bottom:1px solid var(--border); cursor:pointer; user-select:none;
+  white-space:nowrap; transition:color .2s;
+}
+.denial-table th:hover { color:var(--brass-light); }
+.denial-table td { padding:14px 14px; font-size:13px; border-bottom:1px solid rgba(28,40,64,.4); vertical-align:middle; }
+.denial-table tr { transition:background .15s; }
+.denial-table tr:hover td { background:rgba(15,21,32,.8); }
+.denial-table tr.top-row td { background:rgba(139,26,26,.05); }
+.denial-table tr.top-row:hover td { background:rgba(139,26,26,.1); }
+
+.rank-num { font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--text-secondary); }
+.rank-num.danger { color:var(--crimson-light); }
+.insurer-cell-name { font-size:14px; font-weight:500; }
+.rate-cell { font-family:'Cormorant Garamond',serif; font-size:22px; }
+.rate-cell.high { color:var(--crimson-light); }
+.rate-cell.mid  { color:var(--brass); }
+.rate-cell.low  { color:var(--green-light); }
+.proc-tag { font-size:10px; color:var(--text-secondary); letter-spacing:.1em; border:1px solid var(--border); padding:3px 8px; }
+.states-cell { color:var(--text-secondary); font-size:12px; }
+
+/* Inline denial bar in table */
+.rate-bar-wrap { display:flex; align-items:center; gap:10px; }
+.mini-bar-bg { flex:1; height:3px; background:var(--border); }
+.mini-bar-fill { height:3px; transition:width .6s ease; }
+
+/* ── BOTTOM CTA ── */
+.bottom-cta {
+  background:var(--surface); border-top:1px solid var(--border);
+  padding:72px 56px; display:flex; align-items:center; justify-content:space-between;
+}
+.bottom-cta-title { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:40px; line-height:1.2; max-width:480px; }
+.bottom-cta-sub { font-size:13px; color:var(--text-secondary); margin-top:10px; }
+.cta-btn {
+  background:var(--navy); border:1px solid var(--brass);
+  color:var(--text); font-size:12px; letter-spacing:.14em; padding:16px 40px;
+  transition:all .25s; white-space:nowrap;
+}
+.cta-btn:hover { background:#1d3e7a; border-color:var(--brass-light); box-shadow:0 4px 20px rgba(26,58,107,.4); }
+
+/* ── FOOTER ── */
+.footer { background:var(--bg); border-top:1px solid var(--border); padding:60px 56px 36px; }
+.footer-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:44px; }
+.footer-logo { font-family:'Cormorant Garamond',serif; font-size:20px; margin-bottom:10px; }
+.footer-desc { font-size:12px; color:var(--text-secondary); line-height:1.65; }
+.footer-heading { font-size:10px; font-variant:small-caps; letter-spacing:.16em; color:var(--brass); margin-bottom:14px; display:block; }
+.footer-link { font-size:13px; color:var(--text-secondary); transition:color .2s; display:block; margin-bottom:10px; }
+.footer-link:hover { color:var(--brass); }
+.footer-bottom { border-top:1px solid var(--border); padding-top:28px; display:flex; justify-content:space-between; align-items:center; }
+.footer-copy { font-size:10px; color:var(--text-secondary); }
+.footer-disclaimer { font-size:10px; color:var(--text-secondary); max-width:460px; text-align:right; }
+
+/* ── LIVE TICKER ── */
+.live-ticker {
+  background:rgba(139,26,26,.12); border-bottom:1px solid rgba(139,26,26,.3);
+  padding:9px 56px; display:flex; align-items:center; gap:16px;
+  overflow:hidden;
+}
+.ticker-label {
+  font-size:10px; text-transform:uppercase; letter-spacing:.2em;
+  color:var(--crimson); white-space:nowrap;
+  display:flex; align-items:center; gap:8px;
+}
+.ticker-label::before {
+  content:''; width:6px; height:6px; background:var(--crimson-light);
+  border-radius:50%; animation:pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+.ticker-content { font-size:11px; color:var(--text-secondary); overflow:hidden; white-space:nowrap; }
+.ticker-scroll {
+  display:inline-block;
+  animation:tickerScroll 28s linear infinite;
+}
+@keyframes tickerScroll {
+  0%   { transform:translateX(0); }
+  100% { transform:translateX(-50%); }
+}
+
+/* Animated counter */
+.counting { display:inline-block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width:900px) {
+  .navbar { padding:0 24px; }
+  .nav-center { display:none; }
+  .page-header { padding:110px 24px 56px; }
+  .national-stats { grid-template-columns:repeat(2,1fr); }
+  .nat-stat { padding:22px 18px; }
+  .main-content { grid-template-columns:1fr; }
+  .detail-panel { position:static; height:auto; border-left:none; border-top:1px solid var(--border); }
+  .table-section { padding:52px 24px; }
+  .table-header { flex-direction:column; gap:12px; }
+  .table-subtitle { text-align:left; }
+  .bottom-cta { flex-direction:column; gap:28px; padding:52px 24px; }
+  .footer { padding:52px 24px 32px; }
+  .footer-top { flex-direction:column; gap:36px; }
+  .footer-bottom { flex-direction:column; gap:10px; text-align:center; }
+  .footer-disclaimer { text-align:center; }
+  .live-ticker { padding:9px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">UnDenied</a>
+  <div class="nav-center">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="knowrights.html" class="nav-link">Know Your Rights</a>
+    <a href="stories.html" class="nav-link">Success Stories</a>
+    <a href="TheDenialMachine.html" class="nav-link active">The Denial Machine</a>
+    <a href="about.html" class="nav-link">About</a>
+  </div>
+  <button class="nav-cta" onclick="window.location.href='annalyzer.html'">Analyze My Letter →</button>
+</nav>
+
+<!-- LIVE TICKER -->
+<div class="live-ticker">
+  <div class="ticker-label">Live Data</div>
+  <div class="ticker-content">
+    <span class="ticker-scroll">
+      Texas denies 29.4% of all claims &nbsp;·&nbsp; UnitedHealthcare: 31.2% avg denial rate &nbsp;·&nbsp; 80% of patients never appeal &nbsp;·&nbsp; Minnesota: 84% of appeals succeed &nbsp;·&nbsp; Spinal Fusion is the #1 denied procedure nationally &nbsp;·&nbsp; Florida denies 27.6% of cardiac claims &nbsp;·&nbsp; Vermont: lowest denial rate at 9.6% &nbsp;·&nbsp; 
+      Texas denies 29.4% of all claims &nbsp;·&nbsp; UnitedHealthcare: 31.2% avg denial rate &nbsp;·&nbsp; 80% of patients never appeal &nbsp;·&nbsp; Minnesota: 84% of appeals succeed &nbsp;·&nbsp; Spinal Fusion is the #1 denied procedure nationally &nbsp;·&nbsp; Florida denies 27.6% of cardiac claims &nbsp;·&nbsp; Vermont: lowest denial rate at 9.6% &nbsp;·&nbsp;
+    </span>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+  <div class="header-eyebrow">Data Investigation</div>
+  <h1 class="page-title">The Denial<br><em>Machine</em></h1>
+  <p class="page-subtitle">Which insurers deny the most claims — and where. The system isn't broken. This is how it was designed.</p>
+  <div class="source-tag">Source: CMS Public Use Files &amp; State Insurance Commission Reports, 2024</div>
+</section>
+
+<!-- NATIONAL STATS -->
+<div class="national-stats">
+  <div class="nat-stat">
+    <div class="nat-stat-label">Highest Denial Rate</div>
+    <div class="nat-stat-value red"><span class="counting" data-target="29.4" data-suffix="%">0%</span> — TX</div>
+    <div class="nat-stat-sub">of all claims denied</div>
+  </div>
+  <div class="nat-stat">
+    <div class="nat-stat-label">Most Denied Procedure</div>
+    <div class="nat-stat-value">Spinal Fusion</div>
+    <div class="nat-stat-sub">nationally, denied in 38% of cases</div>
+  </div>
+  <div class="nat-stat">
+    <div class="nat-stat-label">Worst Offender</div>
+    <div class="nat-stat-value red">UnitedHealthcare</div>
+    <div class="nat-stat-sub"><span class="counting" data-target="31.2" data-suffix="%">0%</span> avg denial rate</div>
+  </div>
+  <div class="nat-stat">
+    <div class="nat-stat-label">Best Appeal Win Rate</div>
+    <div class="nat-stat-value"><span class="counting" data-target="84" data-suffix="%">0%</span> — MN</div>
+    <div class="nat-stat-sub">of appeals succeed</div>
+  </div>
+</div>
+
+<!-- MAP + DETAIL -->
+<div class="main-content">
+  <div class="map-panel">
+    <div class="map-header">
+      <div class="map-title">Denial Rate by State</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div class="map-controls">
+          <button class="map-mode-btn active" id="btn-denial" onclick="setMode('denial')">Denial Rate</button>
+          <button class="map-mode-btn" id="btn-appeal" onclick="setMode('appeal')">Appeal Win Rate</button>
+          <button class="map-mode-btn" id="btn-compare" onclick="setMode('compare')">Compare States</button>
+        </div>
+      </div>
+    </div>
+    <div class="legend-wrap" style="margin-bottom:16px;">
+      <div class="legend-labels"><span id="leg-low">Low (9%)</span><span id="leg-high">High (30%)</span></div>
+      <div class="legend-bar" id="legend-bar" style="background:linear-gradient(to right,#2e4a7a 0%,#7a2020 45%,#e03020 100%)"></div>
+    </div>
+    <svg id="us-map" viewBox="0 0 960 600"></svg>
+    <div id="compare-instructions" style="display:none;font-size:12px;color:var(--brass);text-align:center;margin-top:8px;letter-spacing:.08em;">
+      Click two states to compare them side-by-side
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div class="detail-empty-icon">?</div>
+      <div class="detail-empty-text">Click any state<br>to explore its denial data</div>
+    </div>
+    <div class="detail-content" id="detail-content">
+      <div class="detail-state-name" id="d-state"></div>
+      <div class="detail-rate" id="d-rate"></div>
+      <div class="detail-rate-label" id="d-rate-label">Claims Denied</div>
+      <div class="detail-divider"></div>
+      <div class="detail-section-title">Top Denied Procedures</div>
+      <div id="d-procedures"></div>
+      <div class="detail-divider"></div>
+      <div class="detail-section-title">Worst Insurers in This State</div>
+      <div id="d-insurers"></div>
+      <div class="detail-divider"></div>
+      <div class="detail-section-title">If You Appeal Here</div>
+      <div class="appeal-box">
+        <div class="appeal-pct" id="d-appeal"></div>
+        <div class="appeal-label">of appeals succeed in this state</div>
+        <div class="appeal-meter"><div class="appeal-meter-fill" id="d-appeal-bar"></div></div>
+      </div>
+      <div class="compare-panel" id="compare-panel">
+        <div class="compare-title">State Comparison</div>
+        <div id="compare-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Map Tooltip -->
+<div class="map-tooltip" id="map-tooltip">
+  <div class="tooltip-state" id="tt-state"></div>
+  <div class="tooltip-rate" id="tt-rate"></div>
+  <div class="tooltip-proc" id="tt-proc"></div>
+  <div class="tooltip-hint" id="tt-hint">Click to explore →</div>
+</div>
+
+<!-- INSURER TABLE -->
+<div class="table-section" id="rankings">
+  <div class="table-header">
+    <div>
+      <div class="table-eyebrow">Insurer Rankings</div>
+      <div class="table-title">Who Denies the Most</div>
+    </div>
+    <div class="table-subtitle">Click headers to sort. Red = top offenders.</div>
+  </div>
+  <input type="text" class="search-bar" id="table-search" placeholder="Filter insurers..." oninput="renderTable()">
+  <table class="denial-table" id="insurer-table">
+    <thead>
+      <tr>
+        <th data-col="rank">#</th>
+        <th data-col="name">Insurer <span class="sort-arrow">↕</span></th>
+        <th data-col="rate">Avg Denial Rate <span class="sort-arrow active">↓</span></th>
+        <th data-col="proc">Most Denied Procedure <span class="sort-arrow">↕</span></th>
+        <th data-col="states">States <span class="sort-arrow">↕</span></th>
+        <th data-col="appeal">Appeal Win Rate <span class="sort-arrow">↕</span></th>
+      </tr>
+    </thead>
+    <tbody id="insurer-tbody"></tbody>
+  </table>
+</div>
+
+<!-- BOTTOM CTA -->
+<div class="bottom-cta">
+  <div>
+    <div class="bottom-cta-title">Got a denial letter? Fight it.</div>
+    <div class="bottom-cta-sub">80% of people never appeal. Most who do, win.</div>
+  </div>
+  <button class="cta-btn" onclick="window.location.href='annalyzer.html'">ANALYZE MY LETTER →</button>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">UnDenied</div>
+      <div class="footer-desc">Free legal clarity for everyone.<br>No account. No data. No compromise.</div>
+    </div>
+    <div>
+      <span class="footer-heading">Navigate</span>
+      <a href="annalyzer.html" class="footer-link">Analyze My Letter →</a>
+      <a href="knowrights.html" class="footer-link">Know Your Rights →</a>
+      <a href="stories.html" class="footer-link">Success Stories →</a>
+      <a href="TheDenialMachine.html" class="footer-link">The Denial Machine →</a>
+    </div>
+    <div>
+      <span class="footer-heading">Project</span>
+      <a href="#" class="footer-link">GitHub</a>
+      <a href="stories.html#sources" class="footer-link">Sources →</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 UnDenied</div>
+    <div class="footer-disclaimer">UnDenied provides information only, not legal advice. Data sourced from CMS Public Use Files and state insurance commission reports.</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+
+// ── DATA ──
+const stateData = {
+  "AL":{ name:"Alabama", rate:26.1, appeal:61, procedures:[{name:"Spinal Fusion",pct:34},{name:"Lumbar MRI",pct:28},{name:"Knee Replacement",pct:22}], insurers:[{name:"UnitedHealthcare",rate:"31.2%"},{name:"Humana",rate:"28.4%"},{name:"BCBS Alabama",rate:"22.1%"}] },
+  "AK":{ name:"Alaska", rate:17.3, appeal:69, procedures:[{name:"Lumbar MRI",pct:31},{name:"Physical Therapy",pct:27},{name:"CPAP Therapy",pct:19}], insurers:[{name:"Premera BCBS",rate:"21.4%"},{name:"Aetna",rate:"19.8%"},{name:"Cigna",rate:"17.2%"}] },
+  "AZ":{ name:"Arizona", rate:21.4, appeal:66, procedures:[{name:"Cardiac Cath",pct:30},{name:"Spinal Fusion",pct:26},{name:"Humira",pct:20}], insurers:[{name:"UnitedHealthcare",rate:"28.3%"},{name:"Cigna",rate:"24.1%"},{name:"Aetna",rate:"19.7%"}] },
+  "AR":{ name:"Arkansas", rate:25.8, appeal:62, procedures:[{name:"Knee Replacement",pct:33},{name:"Spinal Fusion",pct:29},{name:"Cardiac Cath",pct:21}], insurers:[{name:"QualChoice",rate:"29.4%"},{name:"UnitedHealthcare",rate:"27.8%"},{name:"Humana",rate:"24.3%"}] },
+  "CA":{ name:"California", rate:14.2, appeal:76, procedures:[{name:"Humira",pct:28},{name:"Physical Therapy",pct:24},{name:"Lumbar MRI",pct:18}], insurers:[{name:"Cigna",rate:"18.1%"},{name:"Aetna",rate:"16.4%"},{name:"Anthem BCBS",rate:"13.8%"}] },
+  "CO":{ name:"Colorado", rate:15.1, appeal:74, procedures:[{name:"Physical Therapy",pct:29},{name:"Lumbar MRI",pct:25},{name:"Humira",pct:20}], insurers:[{name:"UnitedHealthcare",rate:"19.2%"},{name:"Cigna",rate:"17.8%"},{name:"Anthem",rate:"14.3%"}] },
+  "CT":{ name:"Connecticut", rate:11.8, appeal:79, procedures:[{name:"Humira",pct:27},{name:"Lumbar MRI",pct:23},{name:"Physical Therapy",pct:19}], insurers:[{name:"Aetna",rate:"15.2%"},{name:"Cigna",rate:"13.4%"},{name:"Oxford",rate:"11.1%"}] },
+  "DE":{ name:"Delaware", rate:16.3, appeal:71, procedures:[{name:"Knee Replacement",pct:28},{name:"Cardiac Cath",pct:24},{name:"Spinal Fusion",pct:20}], insurers:[{name:"Highmark",rate:"20.1%"},{name:"Aetna",rate:"18.3%"},{name:"UHC",rate:"15.7%"}] },
+  "FL":{ name:"Florida", rate:27.6, appeal:60, procedures:[{name:"Knee Replacement",pct:35},{name:"Cardiac Cath",pct:30},{name:"Spinal Fusion",pct:25}], insurers:[{name:"UnitedHealthcare",rate:"32.4%"},{name:"Humana",rate:"29.1%"},{name:"Cigna",rate:"26.8%"}] },
+  "GA":{ name:"Georgia", rate:24.9, appeal:63, procedures:[{name:"Spinal Fusion",pct:32},{name:"Cardiac Cath",pct:27},{name:"Knee Replacement",pct:22}], insurers:[{name:"UnitedHealthcare",rate:"30.1%"},{name:"Aetna",rate:"26.4%"},{name:"BCBS Georgia",rate:"22.8%"}] },
+  "HI":{ name:"Hawaii", rate:9.8, appeal:82, procedures:[{name:"Physical Therapy",pct:24},{name:"Lumbar MRI",pct:20},{name:"CPAP Therapy",pct:16}], insurers:[{name:"Hawaii Medical",rate:"12.4%"},{name:"HMSA",rate:"10.8%"},{name:"Kaiser",rate:"9.1%"}] },
+  "ID":{ name:"Idaho", rate:18.7, appeal:68, procedures:[{name:"Lumbar MRI",pct:30},{name:"Physical Therapy",pct:26},{name:"Knee Replacement",pct:21}], insurers:[{name:"Regence BCBS",rate:"22.3%"},{name:"Aetna",rate:"20.1%"},{name:"Cigna",rate:"17.8%"}] },
+  "IL":{ name:"Illinois", rate:16.9, appeal:72, procedures:[{name:"Humira",pct:28},{name:"Cardiac Cath",pct:24},{name:"Spinal Fusion",pct:19}], insurers:[{name:"UnitedHealthcare",rate:"21.4%"},{name:"BCBS Illinois",rate:"18.2%"},{name:"Aetna",rate:"15.7%"}] },
+  "IN":{ name:"Indiana", rate:20.1, appeal:67, procedures:[{name:"Cardiac Cath",pct:31},{name:"Knee Replacement",pct:26},{name:"Spinal Fusion",pct:22}], insurers:[{name:"Anthem BCBS",rate:"24.8%"},{name:"UnitedHealthcare",rate:"22.3%"},{name:"Cigna",rate:"19.1%"}] },
+  "IA":{ name:"Iowa", rate:14.8, appeal:75, procedures:[{name:"Physical Therapy",pct:27},{name:"Lumbar MRI",pct:23},{name:"CPAP Therapy",pct:18}], insurers:[{name:"Wellmark BCBS",rate:"18.4%"},{name:"UnitedHealthcare",rate:"16.2%"},{name:"Aetna",rate:"13.9%"}] },
+  "KS":{ name:"Kansas", rate:19.4, appeal:68, procedures:[{name:"Spinal Fusion",pct:29},{name:"Knee Replacement",pct:25},{name:"Lumbar MRI",pct:21}], insurers:[{name:"UnitedHealthcare",rate:"24.1%"},{name:"BlueCross Kansas",rate:"21.3%"},{name:"Cigna",rate:"18.7%"}] },
+  "KY":{ name:"Kentucky", rate:23.2, appeal:64, procedures:[{name:"Cardiac Cath",pct:33},{name:"Spinal Fusion",pct:28},{name:"Knee Replacement",pct:23}], insurers:[{name:"Humana",rate:"27.8%"},{name:"Anthem",rate:"24.6%"},{name:"UHC",rate:"21.4%"}] },
+  "LA":{ name:"Louisiana", rate:26.7, appeal:61, procedures:[{name:"Cardiac Cath",pct:36},{name:"Knee Replacement",pct:30},{name:"Spinal Fusion",pct:24}], insurers:[{name:"Louisiana Health",rate:"30.8%"},{name:"UnitedHealthcare",rate:"28.4%"},{name:"Humana",rate:"25.1%"}] },
+  "ME":{ name:"Maine", rate:12.4, appeal:78, procedures:[{name:"Lumbar MRI",pct:25},{name:"Physical Therapy",pct:22},{name:"Humira",pct:17}], insurers:[{name:"Anthem BCBS",rate:"15.8%"},{name:"Harvard Pilgrim",rate:"13.4%"},{name:"Aetna",rate:"11.2%"}] },
+  "MD":{ name:"Maryland", rate:13.6, appeal:77, procedures:[{name:"Humira",pct:26},{name:"Physical Therapy",pct:22},{name:"Lumbar MRI",pct:18}], insurers:[{name:"CareFirst BCBS",rate:"17.2%"},{name:"Cigna",rate:"15.4%"},{name:"Aetna",rate:"12.8%"}] },
+  "MA":{ name:"Massachusetts", rate:10.4, appeal:82, procedures:[{name:"Physical Therapy",pct:22},{name:"Humira",pct:19},{name:"Lumbar MRI",pct:15}], insurers:[{name:"BCBS Massachusetts",rate:"13.1%"},{name:"Harvard Pilgrim",rate:"11.8%"},{name:"Tufts",rate:"10.2%"}] },
+  "MI":{ name:"Michigan", rate:17.8, appeal:70, procedures:[{name:"Knee Replacement",pct:29},{name:"Cardiac Cath",pct:25},{name:"Spinal Fusion",pct:20}], insurers:[{name:"BCBS Michigan",rate:"22.1%"},{name:"UnitedHealthcare",rate:"19.4%"},{name:"Priority Health",rate:"16.8%"}] },
+  "MN":{ name:"Minnesota", rate:11.2, appeal:84, procedures:[{name:"Physical Therapy",pct:23},{name:"Humira",pct:20},{name:"Lumbar MRI",pct:16}], insurers:[{name:"UnitedHealthcare",rate:"14.8%"},{name:"Medica",rate:"12.3%"},{name:"HealthPartners",rate:"10.4%"}] },
+  "MS":{ name:"Mississippi", rate:27.3, appeal:60, procedures:[{name:"Cardiac Cath",pct:37},{name:"Knee Replacement",pct:31},{name:"Spinal Fusion",pct:26}], insurers:[{name:"UnitedHealthcare",rate:"31.8%"},{name:"Humana",rate:"28.9%"},{name:"Magnolia Health",rate:"25.4%"}] },
+  "MO":{ name:"Missouri", rate:20.8, appeal:66, procedures:[{name:"Spinal Fusion",pct:30},{name:"Cardiac Cath",pct:26},{name:"Knee Replacement",pct:22}], insurers:[{name:"UnitedHealthcare",rate:"25.3%"},{name:"Anthem",rate:"22.4%"},{name:"Cigna",rate:"19.8%"}] },
+  "MT":{ name:"Montana", rate:16.9, appeal:71, procedures:[{name:"Lumbar MRI",pct:28},{name:"Physical Therapy",pct:24},{name:"CPAP Therapy",pct:19}], insurers:[{name:"BCBS Montana",rate:"20.4%"},{name:"Aetna",rate:"18.1%"},{name:"Cigna",rate:"15.8%"}] },
+  "NE":{ name:"Nebraska", rate:15.7, appeal:73, procedures:[{name:"Physical Therapy",pct:26},{name:"Lumbar MRI",pct:23},{name:"Knee Replacement",pct:19}], insurers:[{name:"BlueCross Nebraska",rate:"19.2%"},{name:"UnitedHealthcare",rate:"17.4%"},{name:"Aetna",rate:"14.8%"}] },
+  "NV":{ name:"Nevada", rate:22.3, appeal:65, procedures:[{name:"Cardiac Cath",pct:31},{name:"Knee Replacement",pct:27},{name:"Spinal Fusion",pct:22}], insurers:[{name:"UnitedHealthcare",rate:"27.1%"},{name:"Cigna",rate:"24.3%"},{name:"Humana",rate:"20.8%"}] },
+  "NH":{ name:"New Hampshire", rate:12.1, appeal:79, procedures:[{name:"Humira",pct:24},{name:"Physical Therapy",pct:21},{name:"Lumbar MRI",pct:17}], insurers:[{name:"Anthem",rate:"15.4%"},{name:"Harvard Pilgrim",rate:"13.2%"},{name:"Cigna",rate:"11.4%"}] },
+  "NJ":{ name:"New Jersey", rate:11.9, appeal:80, procedures:[{name:"Humira",pct:25},{name:"Physical Therapy",pct:21},{name:"Lumbar MRI",pct:17}], insurers:[{name:"Horizon BCBS",rate:"14.8%"},{name:"Aetna",rate:"13.1%"},{name:"Cigna",rate:"11.6%"}] },
+  "NM":{ name:"New Mexico", rate:19.6, appeal:68, procedures:[{name:"Lumbar MRI",pct:29},{name:"Physical Therapy",pct:25},{name:"Cardiac Cath",pct:20}], insurers:[{name:"BCBS New Mexico",rate:"23.8%"},{name:"Presbyterian",rate:"21.2%"},{name:"Molina",rate:"18.6%"}] },
+  "NY":{ name:"New York", rate:12.3, appeal:80, procedures:[{name:"Humira",pct:24},{name:"Physical Therapy",pct:21},{name:"Lumbar MRI",pct:17}], insurers:[{name:"UnitedHealthcare",rate:"16.2%"},{name:"Empire BCBS",rate:"13.8%"},{name:"Aetna",rate:"12.1%"}] },
+  "NC":{ name:"North Carolina", rate:21.7, appeal:66, procedures:[{name:"Knee Replacement",pct:30},{name:"Spinal Fusion",pct:26},{name:"Cardiac Cath",pct:22}], insurers:[{name:"BCBS NC",rate:"26.4%"},{name:"UnitedHealthcare",rate:"23.8%"},{name:"Aetna",rate:"20.1%"}] },
+  "ND":{ name:"North Dakota", rate:13.8, appeal:76, procedures:[{name:"Physical Therapy",pct:25},{name:"Lumbar MRI",pct:22},{name:"CPAP Therapy",pct:17}], insurers:[{name:"BCBS North Dakota",rate:"17.3%"},{name:"Sanford Health",rate:"15.1%"},{name:"Aetna",rate:"12.8%"}] },
+  "OH":{ name:"Ohio", rate:18.4, appeal:70, procedures:[{name:"Cardiac Cath",pct:29},{name:"Knee Replacement",pct:25},{name:"Spinal Fusion",pct:21}], insurers:[{name:"Medical Mutual",rate:"22.8%"},{name:"Anthem",rate:"20.4%"},{name:"UnitedHealthcare",rate:"17.9%"}] },
+  "OK":{ name:"Oklahoma", rate:24.1, appeal:63, procedures:[{name:"Spinal Fusion",pct:33},{name:"Cardiac Cath",pct:28},{name:"Knee Replacement",pct:23}], insurers:[{name:"UnitedHealthcare",rate:"28.9%"},{name:"Cigna",rate:"26.1%"},{name:"BCBS Oklahoma",rate:"23.4%"}] },
+  "OR":{ name:"Oregon", rate:12.8, appeal:78, procedures:[{name:"Physical Therapy",pct:26},{name:"Humira",pct:22},{name:"Lumbar MRI",pct:17}], insurers:[{name:"Regence BCBS",rate:"16.1%"},{name:"Kaiser",rate:"14.4%"},{name:"Providence",rate:"12.2%"}] },
+  "PA":{ name:"Pennsylvania", rate:15.6, appeal:73, procedures:[{name:"Knee Replacement",pct:27},{name:"Cardiac Cath",pct:23},{name:"Humira",pct:19}], insurers:[{name:"Highmark",rate:"19.4%"},{name:"Independence BCBS",rate:"17.2%"},{name:"Aetna",rate:"14.8%"}] },
+  "RI":{ name:"Rhode Island", rate:11.4, appeal:80, procedures:[{name:"Physical Therapy",pct:23},{name:"Humira",pct:20},{name:"Lumbar MRI",pct:16}], insurers:[{name:"BCBS RI",rate:"14.2%"},{name:"Aetna",rate:"12.8%"},{name:"Tufts",rate:"10.9%"}] },
+  "SC":{ name:"South Carolina", rate:24.3, appeal:63, procedures:[{name:"Knee Replacement",pct:32},{name:"Spinal Fusion",pct:27},{name:"Cardiac Cath",pct:23}], insurers:[{name:"BCBS SC",rate:"28.4%"},{name:"UnitedHealthcare",rate:"26.1%"},{name:"Cigna",rate:"23.7%"}] },
+  "SD":{ name:"South Dakota", rate:14.2, appeal:75, procedures:[{name:"Physical Therapy",pct:26},{name:"Lumbar MRI",pct:22},{name:"CPAP Therapy",pct:17}], insurers:[{name:"Wellmark",rate:"17.8%"},{name:"Sanford Health",rate:"15.4%"},{name:"Avera",rate:"13.2%"}] },
+  "TN":{ name:"Tennessee", rate:25.4, appeal:62, procedures:[{name:"Spinal Fusion",pct:34},{name:"Cardiac Cath",pct:29},{name:"Knee Replacement",pct:24}], insurers:[{name:"BlueCross TN",rate:"30.1%"},{name:"UnitedHealthcare",rate:"27.4%"},{name:"Humana",rate:"24.8%"}] },
+  "TX":{ name:"Texas", rate:29.4, appeal:58, procedures:[{name:"Spinal Fusion",pct:38},{name:"Cardiac Cath",pct:32},{name:"Knee Replacement",pct:27}], insurers:[{name:"UnitedHealthcare",rate:"34.2%"},{name:"Aetna",rate:"31.8%"},{name:"BCBS Texas",rate:"28.4%"}] },
+  "UT":{ name:"Utah", rate:16.4, appeal:72, procedures:[{name:"Physical Therapy",pct:27},{name:"Lumbar MRI",pct:24},{name:"Knee Replacement",pct:19}], insurers:[{name:"SelectHealth",rate:"20.1%"},{name:"UnitedHealthcare",rate:"18.4%"},{name:"BCBS Utah",rate:"15.8%"}] },
+  "VT":{ name:"Vermont", rate:9.6, appeal:83, procedures:[{name:"Physical Therapy",pct:22},{name:"Humira",pct:18},{name:"Lumbar MRI",pct:14}], insurers:[{name:"BCBS VT",rate:"12.4%"},{name:"MVP Health",rate:"10.8%"},{name:"Aetna",rate:"9.1%"}] },
+  "VA":{ name:"Virginia", rate:16.8, appeal:72, procedures:[{name:"Humira",pct:27},{name:"Knee Replacement",pct:23},{name:"Lumbar MRI",pct:19}], insurers:[{name:"Anthem BCBS",rate:"21.2%"},{name:"Optima",rate:"18.8%"},{name:"UnitedHealthcare",rate:"16.4%"}] },
+  "WA":{ name:"Washington", rate:12.1, appeal:80, procedures:[{name:"Physical Therapy",pct:25},{name:"Humira",pct:21},{name:"Lumbar MRI",pct:16}], insurers:[{name:"Premera BCBS",rate:"15.8%"},{name:"Regence",rate:"13.4%"},{name:"Kaiser",rate:"11.8%"}] },
+  "WV":{ name:"West Virginia", rate:23.7, appeal:64, procedures:[{name:"Cardiac Cath",pct:34},{name:"Knee Replacement",pct:29},{name:"Spinal Fusion",pct:24}], insurers:[{name:"Highmark WV",rate:"27.8%"},{name:"UnitedHealthcare",rate:"25.4%"},{name:"Aetna",rate:"22.1%"}] },
+  "WI":{ name:"Wisconsin", rate:13.4, appeal:77, procedures:[{name:"Physical Therapy",pct:26},{name:"Knee Replacement",pct:22},{name:"Humira",pct:18}], insurers:[{name:"WEA Trust",rate:"16.8%"},{name:"Dean Health",rate:"14.4%"},{name:"Quartz",rate:"12.8%"}] },
+  "WY":{ name:"Wyoming", rate:17.6, appeal:70, procedures:[{name:"Lumbar MRI",pct:29},{name:"Physical Therapy",pct:25},{name:"Knee Replacement",pct:20}], insurers:[{name:"BCBS Wyoming",rate:"21.4%"},{name:"Aetna",rate:"19.2%"},{name:"Cigna",rate:"16.8%"}] },
+  "DC":{ name:"Washington D.C.", rate:10.8, appeal:81, procedures:[{name:"Physical Therapy",pct:22},{name:"Humira",pct:19},{name:"Lumbar MRI",pct:15}], insurers:[{name:"CareFirst",rate:"13.8%"},{name:"Aetna",rate:"12.1%"},{name:"UHC",rate:"10.4%"}] }
+};
+
+const insurerData = [
+  { name:"UnitedHealthcare",  rate:31.2, proc:"Spinal Fusion",              states:50, appeal:58 },
+  { name:"Cigna",             rate:26.8, proc:"Knee Replacement",           states:47, appeal:61 },
+  { name:"Aetna",             rate:24.4, proc:"Cardiac Catheterization",    states:48, appeal:63 },
+  { name:"Humana",            rate:27.1, proc:"Spinal Fusion",              states:44, appeal:60 },
+  { name:"Anthem BCBS",       rate:22.3, proc:"Lumbar MRI",                states:14, appeal:65 },
+  { name:"Centene",           rate:28.9, proc:"Knee Replacement",           states:29, appeal:59 },
+  { name:"Molina Healthcare", rate:25.7, proc:"Physical Therapy",           states:19, appeal:62 },
+  { name:"Kaiser Permanente", rate:11.4, proc:"Humira (Adalimumab)",        states:8,  appeal:79 },
+  { name:"HealthPartners",    rate:10.8, proc:"Physical Therapy",           states:7,  appeal:82 },
+  { name:"Highmark",          rate:18.6, proc:"Cardiac Catheterization",    states:4,  appeal:69 },
+  { name:"Tufts Health",      rate:12.1, proc:"Humira (Adalimumab)",        states:6,  appeal:78 },
+  { name:"BCBS (State Plans)",rate:19.8, proc:"Spinal Fusion",              states:36, appeal:68 },
+];
+
+// ── FIPS MAP ──
+const fipsToAbbr = {
+  "01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC",
+  "12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY",
+  "22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT",
+  "31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH",
+  "40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT",
+  "50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"
+};
+
+// ── COLOR FUNCTIONS ──
+// Denial: visible slate-blue (low/good) → bright crimson (high/bad)
+function denialColor(rate) {
+  const t = Math.max(0, Math.min(1, (rate - 9) / (30 - 9)));
+  if (t < 0.4) return d3.interpolateRgb("#2e4a7a", "#7a2020")(t / 0.4);
+  return d3.interpolateRgb("#7a2020", "#e03020")((t - 0.4) / 0.6);
+}
+// Appeal: bright red (low win rate = bad) → bright green (high win rate = good)
+function appealColor(rate) {
+  const t = Math.max(0, Math.min(1, (rate - 55) / (90 - 55)));
+  if (t < 0.4) return d3.interpolateRgb("#8b1a1a", "#9a7b2a")(t / 0.4);
+  return d3.interpolateRgb("#9a7b2a", "#1e7a46")((t - 0.4) / 0.6);
+}
+
+// ── MAP STATE ──
+let currentMode = 'denial';
+let compareStates = [];
+let svgPaths = null;
+let mapReady = false;
+
+function setMode(mode) {
+  currentMode = mode;
+  compareStates = [];
+
+  document.querySelectorAll('.map-mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-'+mode).classList.add('active');
+
+  const compareInstr = document.getElementById('compare-instructions');
+  const comparePanel = document.getElementById('compare-panel');
+
+  if (mode === 'compare') {
+    compareInstr.style.display = 'block';
+    if (comparePanel) comparePanel.classList.remove('active');
+    document.getElementById('legend-bar').style.background =
+      'linear-gradient(to right, #1a1f30 0%, #3daa6e 50%, #5b9bd5 100%)';
+    document.getElementById('leg-low').textContent = 'State 1 (green)';
+    document.getElementById('leg-high').textContent = 'State 2 (blue)';
+  } else {
+    compareInstr.style.display = 'none';
+    if (mode === 'denial') {
+      document.getElementById('legend-bar').style.background =
+        'linear-gradient(to right, #2e4a7a 0%, #7a2020 45%, #e03020 100%)';
+      document.getElementById('leg-low').textContent = 'Low (9%)';
+      document.getElementById('leg-high').textContent = 'High (30%)';
+    } else {
+      document.getElementById('legend-bar').style.background =
+        'linear-gradient(to right, #8b1a1a 0%, #9a7b2a 40%, #1e7a46 100%)';
+      document.getElementById('leg-low').textContent = 'Low win rate (bad)';
+      document.getElementById('leg-high').textContent = 'High win rate (good)';
+    }
+  }
+
+  if (svgPaths) {
+    svgPaths.classed('selected',false).classed('compare-1',false).classed('compare-2',false).classed('dimmed',false);
+    if (mode !== 'compare') {
+      svgPaths.attr('fill', d => {
+        const abbr = fipsToAbbr[d.id.toString().padStart(2,"0")];
+        if (!abbr || !stateData[abbr]) return "#1a1f2e";
+        return mode === 'denial' ? denialColor(stateData[abbr].rate) : appealColor(stateData[abbr].appeal);
+      });
+    } else {
+      svgPaths.attr('fill','#1e2540');
+    }
+  }
+
+  document.getElementById('detail-empty').style.display = 'flex';
+  document.getElementById('detail-content').classList.remove('active');
+}
+
+// ── DRAW MAP ──
+const svg = d3.select("#us-map");
+const projection = d3.geoAlbersUsa().scale(1280).translate([480, 300]);
+const path = d3.geoPath().projection(projection);
+const tooltip = document.getElementById("map-tooltip");
+
+fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
+  .then(r => r.json())
+  .then(us => {
+    const states = topojson.feature(us, us.objects.states);
+    mapReady = true;
+
+    svgPaths = svg.selectAll(".state-path")
+      .data(states.features)
+      .enter().append("path")
+      .attr("class","state-path")
+      .attr("d", path)
+      .attr("fill", d => {
+        const abbr = fipsToAbbr[d.id.toString().padStart(2,"0")];
+        return abbr && stateData[abbr] ? denialColor(stateData[abbr].rate) : "#1a1f2e";
+      })
+      .on("mousemove", (event, d) => {
+        const abbr = fipsToAbbr[d.id.toString().padStart(2,"0")];
+        if (!abbr || !stateData[abbr]) return;
+        const sd = stateData[abbr];
+        document.getElementById("tt-state").textContent = sd.name;
+        if (currentMode === 'appeal') {
+          document.getElementById("tt-rate").textContent = sd.appeal + "% of appeals succeed";
+          document.getElementById("tt-proc").textContent = "";
+        } else if (currentMode === 'compare') {
+          document.getElementById("tt-rate").textContent = sd.rate + "% denied · " + sd.appeal + "% appeals won";
+          document.getElementById("tt-proc").textContent = "";
+          document.getElementById("tt-hint").textContent = compareStates.length === 0 ? "Click to select as State 1" : compareStates.length === 1 ? "Click to compare" : "Reset to reselect";
+        } else {
+          document.getElementById("tt-rate").textContent = sd.rate + "% of claims denied";
+          document.getElementById("tt-proc").textContent = "Top denied: " + sd.procedures[0].name;
+          document.getElementById("tt-hint").textContent = "Click to explore →";
+        }
+        tooltip.style.opacity = "1";
+        tooltip.style.left = (event.clientX + 18) + "px";
+        tooltip.style.top  = (event.clientY - 22) + "px";
+      })
+      .on("mouseleave", () => { tooltip.style.opacity = "0"; })
+      .on("click", (event, d) => {
+        const abbr = fipsToAbbr[d.id.toString().padStart(2,"0")];
+        if (!abbr || !stateData[abbr]) return;
+        tooltip.style.opacity = "0";
+
+        if (currentMode === 'compare') {
+          handleCompare(abbr, event.currentTarget);
+          return;
+        }
+
+        svgPaths.classed("selected", false);
+        d3.select(event.currentTarget).classed("selected", true);
+        showStateDetail(abbr);
+      });
+
+    // Mesh border
+    svg.append("path")
+      .datum(topojson.mesh(us, us.objects.states, (a,b) => a !== b))
+      .attr("fill","none").attr("stroke","#060a10").attr("stroke-width","0.7")
+      .attr("d", path);
+
+    // Animate states in
+    svgPaths.style("opacity", 0)
+      .transition().duration(600).delay((d,i) => i*4)
+      .style("opacity", 1);
+  })
+  .catch(err => {
+    console.error("Map load error:", err);
+    document.querySelector('.map-panel').insertAdjacentHTML('beforeend',
+      '<p style="color:var(--crimson-light);font-size:13px;margin-top:16px;">Map unavailable — check network connection</p>');
+  });
+
+// ── COMPARE LOGIC ──
+function handleCompare(abbr, el) {
+  if (compareStates.includes(abbr)) return;
+  if (compareStates.length >= 2) {
+    compareStates = [];
+    svgPaths.classed('compare-1',false).classed('compare-2',false).classed('dimmed',false)
+      .attr('fill','#1e2540');
+  }
+  compareStates.push(abbr);
+  const cls = compareStates.length === 1 ? 'compare-1' : 'compare-2';
+  d3.select(el).classed(cls, true).attr('fill', cls === 'compare-1' ? '#1a3d28' : '#1a2a3d');
+
+  if (compareStates.length === 2) {
+    svgPaths.each(function(d2) {
+      const a2 = fipsToAbbr[d2.id.toString().padStart(2,"0")];
+      if (a2 && !compareStates.includes(a2)) d3.select(this).classed('dimmed', true);
+    });
+    showCompare(compareStates[0], compareStates[1]);
+  } else {
+    document.getElementById('detail-empty').style.display = 'none';
+    document.getElementById('detail-content').classList.add('active');
+    document.getElementById('d-state').textContent = stateData[abbr].name;
+    document.getElementById('d-rate').textContent = stateData[abbr].rate + '%';
+    document.getElementById('d-rate-label').textContent = 'Claims Denied — State 1';
+    document.getElementById('d-procedures').innerHTML = '';
+    document.getElementById('d-insurers').innerHTML = '';
+    document.getElementById('compare-panel').classList.remove('active');
+    // Restore appeal-box before touching its children
+    document.querySelector('.appeal-box').innerHTML = `
+      <div class="appeal-pct" id="d-appeal">${stateData[abbr].appeal}%</div>
+      <div class="appeal-label">of appeals succeed in this state</div>
+      <div class="appeal-meter"><div class="appeal-meter-fill" id="d-appeal-bar" style="width:0"></div></div>
+    `;
+    setTimeout(() => {
+      const bar = document.getElementById('d-appeal-bar');
+      if (bar) bar.style.width = stateData[abbr].appeal + '%';
+    }, 100);
+  }
+}
+
+function showCompare(a1, a2) {
+  const s1 = stateData[a1], s2 = stateData[a2];
+  document.getElementById('detail-empty').style.display = 'none';
+  document.getElementById('detail-content').classList.add('active');
+  document.getElementById('d-state').textContent = s1.name + ' vs ' + s2.name;
+  document.getElementById('d-rate').textContent = '';
+  document.getElementById('d-rate-label').textContent = 'Side-by-Side Comparison';
+
+  const maxRate = Math.max(s1.rate, s2.rate);
+  const maxAppeal = Math.max(s1.appeal, s2.appeal);
+
+  document.getElementById('d-procedures').innerHTML = `
+    <div class="compare-bar-wrap">
+      <div class="compare-label"><span style="color:#3daa6e">${s1.name}</span><span style="color:#3daa6e">${s1.rate}%</span></div>
+      <div class="compare-bar-track" style="height:8px">
+        <div class="compare-bar-1" id="cbar1" style="width:0"></div>
+      </div>
+      <div class="compare-label" style="margin-top:5px"><span style="color:#5b9bd5">${s2.name}</span><span style="color:#5b9bd5">${s2.rate}%</span></div>
+      <div class="compare-bar-track" style="height:8px">
+        <div class="compare-bar-2" id="cbar2" style="width:0"></div>
+      </div>
+      <div style="font-size:10px;color:var(--text-secondary);margin-top:6px;">Denial Rate (higher = worse)</div>
+    </div>
+  `;
+
+  document.getElementById('d-insurers').innerHTML = `
+    <div class="compare-bar-wrap" style="margin-top:4px">
+      <div class="compare-label"><span style="color:#3daa6e">${s1.name}</span><span style="color:#3daa6e">${s1.appeal}%</span></div>
+      <div class="compare-bar-track" style="height:8px">
+        <div class="compare-bar-1" id="abar1" style="background:#3daa6e;width:0"></div>
+      </div>
+      <div class="compare-label" style="margin-top:5px"><span style="color:#5b9bd5">${s2.name}</span><span style="color:#5b9bd5">${s2.appeal}%</span></div>
+      <div class="compare-bar-track" style="height:8px">
+        <div class="compare-bar-2" id="abar2" style="background:#5b9bd5;width:0"></div>
+      </div>
+      <div style="font-size:10px;color:var(--text-secondary);margin-top:6px;">Appeal Win Rate (higher = better)</div>
+    </div>
+  `;
+
+  const winner = s1.rate < s2.rate ? s1 : s2;
+  document.getElementById('compare-panel').classList.remove('active');
+
+  // Verdict — replaces appeal-box entirely
+  document.querySelector('.appeal-box').innerHTML = `
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--brass);margin-bottom:8px;">Verdict</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:17px;line-height:1.4;">
+      <span style="color:#3daa6e">${winner.name}</span> denies <strong style="color:var(--crimson-light)">${Math.abs(s1.rate-s2.rate).toFixed(1)}%</strong> fewer claims<br>
+      and has a <strong style="color:var(--brass)">${Math.abs(s1.appeal-s2.appeal)}%</strong> ${s1.appeal>s2.appeal?(s1.name+' higher'):(s2.name+' higher')} appeal win rate.
+    </div>
+  `;
+
+  setTimeout(() => {
+    document.getElementById('cbar1').style.width = (s1.rate/maxRate*100)+'%';
+    document.getElementById('cbar2').style.width = (s2.rate/maxRate*100)+'%';
+    document.getElementById('abar1').style.width = (s1.appeal/maxAppeal*100)+'%';
+    document.getElementById('abar2').style.width = (s2.appeal/maxAppeal*100)+'%';
+  }, 100);
+}
+
+// ── SHOW STATE DETAIL ──
+function showStateDetail(abbr) {
+  const sd = stateData[abbr];
+  if (!sd) return;
+
+  document.getElementById("detail-empty").style.display = "none";
+  document.getElementById("detail-content").classList.add("active");
+  document.getElementById("d-state").textContent = sd.name;
+  document.getElementById("d-rate").textContent = sd.rate + "%";
+  document.getElementById("d-rate-label").textContent = "Claims Denied";
+  document.getElementById('compare-panel').classList.remove('active');
+
+  // Always restore appeal-box HTML first (showCompare may have wiped it)
+  document.querySelector('.appeal-box').innerHTML = `
+    <div class="appeal-pct" id="d-appeal">${sd.appeal}%</div>
+    <div class="appeal-label">of appeals succeed in this state</div>
+    <div class="appeal-meter"><div class="appeal-meter-fill" id="d-appeal-bar" style="width:0"></div></div>
+  `;
+
+  document.getElementById("d-procedures").innerHTML = sd.procedures.map(p => `
+    <div class="proc-item">
+      <div class="proc-name">${p.name}<span class="proc-pct">${p.pct}%</span></div>
+      <div class="proc-bar-bg"><div class="proc-bar-fill" data-w="${p.pct}"></div></div>
+    </div>
+  `).join('');
+
+  document.getElementById("d-insurers").innerHTML = sd.insurers.map(i => `
+    <div class="insurer-item">
+      <span class="insurer-name">${i.name}</span>
+      <span class="insurer-rate">${i.rate}</span>
+    </div>
+  `).join('');
+
+  setTimeout(() => {
+    document.querySelectorAll('.proc-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+    const bar = document.getElementById('d-appeal-bar');
+    if (bar) bar.style.width = sd.appeal + '%';
+  }, 80);
+
+  if (window.innerWidth <= 900) {
+    document.getElementById("detail-panel").scrollIntoView({behavior:"smooth"});
+  }
+}
+
+// ── TABLE ──
+let sortCol = "rate", sortDir = -1;
+
+function renderTable() {
+  const filter = document.getElementById("table-search").value.toLowerCase();
+  const data = insurerData.filter(d => d.name.toLowerCase().includes(filter));
+  const sorted = [...data].sort((a,b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (typeof av === "string") { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    return av < bv ? sortDir : av > bv ? -sortDir : 0;
+  });
+
+  const maxRate = Math.max(...insurerData.map(d=>d.rate));
+
+  document.getElementById("insurer-tbody").innerHTML = sorted.map((ins, i) => {
+    const isTop = ins.rate >= 27;
+    const rateClass = ins.rate >= 27 ? "high" : ins.rate >= 20 ? "mid" : "low";
+    const barW = (ins.rate/maxRate*100).toFixed(1);
+    const barColor = ins.rate >= 27 ? 'var(--crimson-light)' : ins.rate >= 20 ? 'var(--brass)' : 'var(--green-light)';
+    return `
+    <tr class="${isTop ? 'top-row' : ''}">
+      <td><span class="rank-num ${isTop?'danger':''}">${i+1}</span></td>
+      <td><span class="insurer-cell-name">${ins.name}</span></td>
+      <td>
+        <div class="rate-bar-wrap">
+          <span class="rate-cell ${rateClass}">${ins.rate}%</span>
+          <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${barW}%;background:${barColor}"></div></div>
+        </div>
+      </td>
+      <td><span class="proc-tag">${ins.proc}</span></td>
+      <td class="states-cell">${ins.states} states</td>
+      <td><span class="rate-cell" style="color:var(--brass)">${ins.appeal}%</span></td>
+    </tr>`;
+  }).join('');
+}
+
+document.getElementById("insurer-table").querySelectorAll("th").forEach(th => {
+  th.addEventListener("click", () => {
+    const col = th.dataset.col;
+    if (col === "rank") return;
+    if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = -1; }
+    document.querySelectorAll(".sort-arrow").forEach(a => { a.classList.remove("active"); a.textContent = "↕"; });
+    const arrow = th.querySelector(".sort-arrow");
+    if (arrow) { arrow.classList.add("active"); arrow.textContent = sortDir===-1?"↓":"↑"; }
+    renderTable();
+  });
+});
+renderTable();
+
+// ── ANIMATED COUNTERS ──
+function animateCounters() {
+  document.querySelectorAll('.counting').forEach(el => {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 1400;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const val = (target * ease).toFixed(target % 1 !== 0 ? 1 : 0);
+      el.textContent = val + suffix;
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// Run counters when stats become visible
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { animateCounters(); observer.disconnect(); }});
+}, { threshold: 0.3 });
+observer.observe(document.querySelector('.national-stats'));
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UnDenied — Know Your Rights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../assets/images/favicon_64.png">
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0f1520;
+      --surface-active: #131c2a;
+      --surface-deep: #05080c;
+      --border: #1e2a3d;
+      --text: #ede8dc;
+      --text-secondary: #8a9bb0;
+      --brass: #9a7b4f;
+      --brass-light: #b8956a;
+      --navy: #1a3a6b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+    html { scroll-behavior: auto; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      overflow-x: hidden; -webkit-font-smoothing: antialiased; cursor: none;
+    }
+    h1,h2,h3,h4,h5,h6 { font-family: 'Cormorant Garamond', serif; }
+    a { text-decoration: none; color: inherit; }
+    button { background: none; border: none; font-family: inherit; color: inherit; cursor: none; }
+
+    /* ── GRAIN ── */
+    .grain-overlay {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.028;
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--brass), var(--brass-light));
+      z-index: 9998; pointer-events: none;
+    }
+
+    /* ── CURSOR ── */
+    #cursor-dot {
+      width: 7px; height: 7px; background: var(--brass);
+      border-radius: 50% !important; position: fixed;
+      pointer-events: none; z-index: 10001; top: 0; left: 0; will-change: transform;
+    }
+    #cursor-ring {
+      width: 38px; height: 38px;
+      border: 1.5px solid rgba(154,123,79,.35);
+      border-radius: 50% !important; position: fixed;
+      pointer-events: none; z-index: 10000; top: 0; left: 0; will-change: transform;
+      transition: width .35s cubic-bezier(.25,1,.5,1), height .35s cubic-bezier(.25,1,.5,1),
+                  border-color .35s ease, background .35s ease;
+    }
+    #cursor-ring.hovering { width: 54px; height: 54px; border-color: rgba(154,123,79,.7); background: rgba(154,123,79,.05); }
+    #cursor-ring.clicking { width: 22px; height: 22px; border-color: var(--brass); background: rgba(154,123,79,.15); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--brass); }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; width: 100%; height: 72px;
+      padding: 0 60px; display: flex; justify-content: space-between; align-items: center;
+      z-index: 1000; transition: background .5s ease, backdrop-filter .5s ease, border-bottom .5s ease;
+    }
+    .nav-scrolled { background: rgba(8,12,20,.88); backdrop-filter: blur(24px) saturate(1.8); border-bottom: 1px solid rgba(30,42,61,.7); }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--text); overflow: hidden; }
+    .nav-logo-inner { display: block; transform: translateY(110%); }
+    .nav-center { display: flex; gap: 32px; }
+    .nav-link {
+      font-size: 11px; font-variant: small-caps; letter-spacing: .18em;
+      color: var(--text-secondary); transition: color .25s ease; position: relative; text-decoration: none;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--brass); }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 1px;
+      background: var(--brass); transform: scaleX(0); transform-origin: right;
+      transition: transform .3s cubic-bezier(.25,1,.5,1);
+    }
+    .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
+    .nav-cta {
+      background: var(--navy); border: 1px solid rgba(154,123,79,.6); color: var(--text);
+      font-size: 11px; font-weight: 500; letter-spacing: .12em; padding: 13px 26px;
+      transition: background .3s, border-color .3s, box-shadow .3s;
+    }
+    .nav-cta:hover { background: #1e4a8b; border-color: var(--brass-light); box-shadow: 0 4px 24px rgba(26,58,107,.4); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      height: 100vh; min-height: 640px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 60px 80px; position: relative; overflow: hidden;
+    }
+    .header-orb {
+      position: absolute; width: 800px; height: 800px;
+      border-radius: 50% !important;
+      background: radial-gradient(circle, rgba(26,58,107,.16) 0%, transparent 65%);
+      top: 20%; right: -5%; pointer-events: none; filter: blur(90px); opacity: 0;
+    }
+    .header-orb-2 {
+      position: absolute; width: 400px; height: 400px;
+      border-radius: 50% !important;
+      background: radial-gradient(circle, rgba(154,123,79,.07) 0%, transparent 65%);
+      bottom: 20%; left: 15%; pointer-events: none; filter: blur(70px); opacity: 0;
+    }
+    /* Big background text */
+    .header-bg-text {
+      position: absolute; bottom: 0; right: 0;
+      font-family: 'Cormorant Garamond', serif; font-weight: 300;
+      font-size: clamp(160px, 20vw, 280px);
+      color: var(--border); line-height: 1; pointer-events: none;
+      opacity: 0; letter-spacing: -.03em; user-select: none;
+      transform: translateY(20px);
+    }
+    .page-eyebrow {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .3em; color: var(--brass);
+      margin-bottom: 24px; display: flex; align-items: center; gap: 14px;
+      opacity: 0; transform: translateY(16px);
+    }
+    .eyebrow-line { display: block; width: 32px; height: 1px; background: var(--brass); opacity: .6; }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 8.5vw, 100px); font-weight: 300;
+      line-height: .95; color: var(--text); max-width: 900px; position: relative; z-index: 1;
+    }
+    .page-title .word { display: inline-block; overflow: hidden; vertical-align: bottom; margin-right: .15em; }
+    .page-title .word-inner { display: inline-block; transform: translateY(105%); }
+    .page-sub {
+      font-size: 17px; color: var(--text-secondary); font-weight: 300;
+      margin-top: 28px; max-width: 500px; line-height: 1.75;
+      opacity: 0; transform: translateY(18px); position: relative; z-index: 1;
+    }
+    .brass-rule {
+      position: absolute; bottom: 0; left: 60px;
+      width: 0; height: 1px;
+      background: linear-gradient(90deg, var(--brass), transparent); opacity: .4;
+    }
+    .scroll-hint {
+      position: absolute; right: 60px; bottom: 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: 0;
+    }
+    .scroll-hint-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--brass), transparent);
+      animation: scrollPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse { 0%,100%{opacity:.3;transform:scaleY(1)} 50%{opacity:.9;transform:scaleY(1.1)} }
+    .scroll-hint-text { font-size: 9px; letter-spacing: .28em; text-transform: uppercase; color: var(--text-secondary); writing-mode: vertical-rl; transform: rotate(180deg); }
+
+    /* ── TAB SYSTEM ── */
+    .tabs-outer { padding: 64px 60px 0; position: relative; }
+    .tabs-intro { margin-bottom: 40px; }
+    .tabs-intro-label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .22em; color: var(--brass);
+      display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .tabs-intro-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--brass); opacity: .5; }
+    .tabs-intro-title {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(28px,3vw,40px);
+      font-weight: 300; color: var(--text);
+    }
+    .tabs-row {
+      display: flex; gap: 4px; position: relative;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .tabs-row::-webkit-scrollbar { display: none; }
+
+    /* Sliding indicator */
+    .tab-indicator {
+      position: absolute; bottom: -1px; height: 2px;
+      background: linear-gradient(90deg, var(--brass), var(--brass-light));
+      transition: left .4s cubic-bezier(.25,1,.5,1), width .4s cubic-bezier(.25,1,.5,1);
+      z-index: 2;
+    }
+
+    .tab {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 20px 28px; background: transparent;
+      border: 1px solid transparent; border-bottom: none;
+      color: var(--text-secondary); transition: color .3s ease, background .3s ease;
+      position: relative; white-space: nowrap; flex-shrink: 0;
+      margin-bottom: -1px;
+    }
+    .tab:hover { color: var(--text); background: rgba(255,255,255,.02); }
+    .tab.active {
+      color: var(--text); background: var(--surface-active);
+      border-color: var(--border); border-bottom-color: var(--surface-active);
+    }
+    .tab-icon { width: 26px; height: 26px; transition: transform .4s cubic-bezier(.25,1,.5,1); }
+    .tab:hover .tab-icon, .tab.active .tab-icon { transform: translateY(-2px); }
+    .tab-label { font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+    .tab-count {
+      position: absolute; top: 12px; right: 12px;
+      width: 16px; height: 16px; background: rgba(154,123,79,.15);
+      border: 1px solid rgba(154,123,79,.3); display: flex; align-items: center; justify-content: center;
+      font-size: 8px; color: var(--brass); font-weight: 500; letter-spacing: 0; opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .tab.active .tab-count { opacity: 1; }
+
+    /* ── MAIN CONTENT ── */
+    .main-wrap { padding: 64px 60px 100px; }
+    .content-area { transition: opacity .22s ease; }
+    .content-area.fading { opacity: 0; pointer-events: none; }
+
+    .content-grid {
+      display: grid; grid-template-columns: 360px 1fr;
+      gap: 80px; align-items: start;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel { position: sticky; top: 96px; }
+    .panel-label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .2em; color: var(--brass);
+      display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+    }
+    .panel-label::before { content: ''; display: block; width: 18px; height: 1px; background: var(--brass); opacity: .5; }
+
+    /* Search box */
+    .rights-search-wrap { position: relative; margin-bottom: 20px; }
+    .rights-search {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
+      padding: 12px 14px 12px 40px; outline: none;
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .rights-search::placeholder { color: var(--text-secondary); }
+    .rights-search:focus { border-color: rgba(154,123,79,.5); box-shadow: 0 0 0 1px rgba(154,123,79,.15); }
+    .search-icon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      color: var(--text-secondary); pointer-events: none;
+    }
+
+    /* Rights list */
+    .rights-list { display: flex; flex-direction: column; }
+    .right-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 16px 0; border-bottom: 1px solid rgba(30,42,61,.7);
+      position: relative; transition: background .2s ease;
+      cursor: none;
+    }
+    .right-item:first-child { border-top: 1px solid rgba(30,42,61,.7); }
+    .right-item-num {
+      font-family: 'Cormorant Garamond', serif; font-size: 13px;
+      color: var(--brass); opacity: .4; flex-shrink: 0; margin-top: 1px; letter-spacing: .05em;
+    }
+    .right-text { font-size: 13px; color: var(--text); line-height: 1.65; flex: 1; }
+    .right-text mark { background: rgba(154,123,79,.2); color: var(--brass); padding: 0 2px; }
+    .copy-right-btn {
+      flex-shrink: 0; opacity: 0; padding: 4px;
+      color: var(--text-secondary); transition: opacity .2s ease, color .2s ease;
+      margin-top: 1px;
+    }
+    .right-item:hover .copy-right-btn { opacity: 1; }
+    .copy-right-btn:hover { color: var(--brass); }
+    .copy-right-btn.copied { opacity: 1; color: var(--brass); }
+    .right-item.highlight-match { background: rgba(154,123,79,.04); }
+    .right-item.no-match { opacity: .2; pointer-events: none; }
+
+    /* Jump btn */
+    .jump-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 32px; padding: 15px;
+      background: transparent; border: 1px solid rgba(154,123,79,.45); color: var(--brass);
+      font-size: 11px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
+      transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+      text-decoration: none;
+    }
+    .jump-btn:hover {
+      background: rgba(154,123,79,.08); border-color: var(--brass);
+      box-shadow: 0 0 20px rgba(154,123,79,.12);
+    }
+    .jump-btn-arrow { transition: transform .3s cubic-bezier(.25,1,.5,1); }
+    .jump-btn:hover .jump-btn-arrow { transform: translateX(5px); }
+
+    /* ── RIGHT PANEL: ACCORDIONS ── */
+    .accordion-col { display: flex; flex-direction: column; }
+    .acc-item { margin-bottom: -1px; }
+    .acc-header {
+      padding: 26px 28px; background: var(--surface); border: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; gap: 20px;
+      transition: background .3s ease; position: relative; overflow: hidden;
+    }
+    .acc-header::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--brass); transform: scaleY(0); transform-origin: bottom;
+      transition: transform .35s cubic-bezier(.25,1,.5,1);
+    }
+    .acc-header:hover { background: var(--surface-active); }
+    .acc-header.open { background: var(--surface-active); }
+    .acc-header.open::before { transform: scaleY(1); }
+    .acc-header-left { display: flex; align-items: center; gap: 18px; flex: 1; }
+    .acc-num {
+      font-family: 'Cormorant Garamond', serif; font-size: 15px;
+      color: var(--brass); opacity: .45; letter-spacing: .08em; flex-shrink: 0;
+    }
+    .acc-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--text); }
+    .acc-chevron {
+      flex-shrink: 0; color: var(--brass); opacity: .7;
+      transition: transform .4s cubic-bezier(.25,1,.5,1), opacity .3s ease;
+    }
+    .acc-header.open .acc-chevron { transform: rotate(45deg); opacity: 1; }
+    .acc-body {
+      overflow: hidden; max-height: 0;
+      background: var(--surface-active);
+      border-left: 3px solid var(--brass);
+      border-right: 1px solid var(--border);
+      border-bottom: 0px solid transparent;
+      transition: max-height .55s cubic-bezier(.25,1,.5,1), border-bottom .3s ease;
+    }
+    .acc-body.open { max-height: 1200px; border-bottom: 1px solid var(--border); }
+    .acc-content { padding: 36px 36px 32px 32px; }
+    .acc-text {
+      font-size: 15px; line-height: 1.85; color: var(--text); margin-bottom: 20px;
+    }
+    .acc-text:last-child { margin-bottom: 0; }
+    .acc-note {
+      font-size: 13px; color: var(--text-secondary); font-style: italic;
+      border-top: 1px solid var(--border); padding-top: 20px; margin-top: 20px; line-height: 1.7;
+    }
+
+    /* Accordion step layout */
+    .acc-steps { display: flex; flex-direction: column; gap: 0; margin-top: 4px; }
+    .acc-step {
+      display: flex; gap: 20px; padding: 18px 0;
+      border-bottom: 1px solid rgba(30,42,61,.6);
+    }
+    .acc-step:last-child { border-bottom: none; }
+    .step-num {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border: 1px solid var(--brass); color: var(--brass);
+      font-family: 'Cormorant Garamond', serif; font-size: 16px;
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .step-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* Law badge */
+    .law-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 12px; margin-top: 16px;
+      background: rgba(154,123,79,.08); border: 1px solid rgba(154,123,79,.25);
+      font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--brass);
+    }
+
+    /* ── STAT STRIP ── */
+    .stat-strip {
+      background: var(--surface-deep);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 100px 60px; text-align: center; position: relative; overflow: hidden;
+    }
+    .stat-strip::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(26,58,107,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .stat-eyebrow {
+      font-size: 10px; text-transform: uppercase; letter-spacing: .24em; color: var(--brass);
+      opacity: .7; margin-bottom: 28px; display: block;
+    }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(72px,10vw,120px); color: var(--brass);
+      line-height: 1; margin-bottom: 20px; display: block;
+      will-change: opacity, transform;
+    }
+    .stat-label {
+      font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--text-secondary); max-width: 480px; margin: 0 auto;
+    }
+    .stat-source {
+      font-size: 11px; color: var(--text-secondary); opacity: .45;
+      margin-top: 20px; display: block; letter-spacing: .05em;
+    }
+
+    /* ── BOTTOM CTA ── */
+    .bottom-cta {
+      padding: 120px 60px; text-align: center; position: relative; overflow: hidden;
+    }
+    .bottom-cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(26,58,107,.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-headline {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(28px,4vw,50px); font-weight: 300; color: var(--text);
+      margin-bottom: 16px; line-height: 1.25;
+    }
+    .cta-sub { font-size: 15px; color: var(--text-secondary); margin-bottom: 48px; }
+    .btn-filled {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 18px 52px; background: var(--navy);
+      border: 1px solid rgba(154,123,79,.5); color: var(--text);
+      font-size: 11px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
+      position: relative; overflow: hidden;
+      transition: border-color .3s ease, box-shadow .3s ease;
+    }
+    .btn-filled::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, transparent 50%);
+      transform: translateX(-100%); transition: transform .5s cubic-bezier(.25,1,.5,1);
+    }
+    .btn-filled:hover { border-color: var(--brass-light); box-shadow: 0 8px 40px rgba(26,58,107,.5); }
+    .btn-filled:hover::before { transform: translateX(100%); }
+    .btn-arrow { transition: transform .3s cubic-bezier(.25,1,.5,1); }
+    .btn-filled:hover .btn-arrow { transform: translateX(6px); }
+
+    /* ── SOURCES ── */
+    #sources { padding: 60px; border-top: 1px solid var(--border); background: var(--surface-deep); text-align: center; }
+    .sources-label { font-size: 9px; color: var(--brass); letter-spacing: .28em; text-transform: uppercase; margin-bottom: 24px; display: block; opacity: .4; }
+    .sources-content { font-size: 12px; color: var(--text-secondary); line-height: 2.2; max-width: 700px; margin: 0 auto; }
+    .sources-content a { color: var(--text-secondary); transition: color .2s ease; text-decoration: underline; text-decoration-color: rgba(154,123,79,.2); text-underline-offset: 3px; }
+    .sources-content a:hover { color: var(--brass); text-decoration-color: var(--brass); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--surface); border: 1px solid var(--brass);
+      padding: 12px 24px; font-size: 12px; letter-spacing: .08em;
+      color: var(--brass); z-index: 9997; opacity: 0;
+      transition: opacity .3s ease, transform .3s cubic-bezier(.25,1,.5,1);
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .content-grid { grid-template-columns: 1fr; gap: 48px; }
+      .left-panel { position: static; }
+    }
+    @media (max-width: 768px) {
+      .navbar { padding: 0 24px; }
+      .nav-center { display: none; }
+      .page-header { padding: 0 24px 80px; }
+      .tabs-outer, .main-wrap, .bottom-cta, #sources { padding-left: 24px; padding-right: 24px; }
+      .stat-strip { padding: 60px 24px; }
+      .tab { padding: 16px 18px; }
+      .header-bg-text { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain-overlay"></div>
+  <div id="progress-bar"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+  <div id="toast">Copied to clipboard</div>
+
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-logo"><span class="nav-logo-inner">UnDenied</span></a>
+    <div class="nav-center">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="knowrights.html" class="nav-link active">Know Your Rights</a>
+      <a href="stories.html" class="nav-link">Success Stories</a>
+      <a href="TheDenialMachine.html" class="nav-link">The Denial Machine</a>
+      <a href="about.html" class="nav-link">About</a>
+    </div>
+    <button class="nav-cta" onclick="window.location.href='annalyzer.html'">Analyze My Letter →</button>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header" id="pageHeader">
+    <div class="header-orb" id="headerOrb1"></div>
+    <div class="header-orb-2" id="headerOrb2"></div>
+    <div class="header-bg-text" id="headerBgText">RIGHTS</div>
+    <span class="page-eyebrow" id="eyebrow"><span class="eyebrow-line"></span>Your Protection</span>
+    <h1 class="page-title" id="pageTitle">
+      <span class="word"><span class="word-inner">The</span></span>
+      <span class="word"><span class="word-inner">system</span></span>
+      <span class="word"><span class="word-inner">works</span></span>
+      <br>
+      <span class="word"><span class="word-inner">for</span></span>
+      <span class="word"><span class="word-inner">those</span></span>
+      <span class="word"><span class="word-inner">who</span></span>
+      <span class="word"><span class="word-inner">know</span></span>
+      <br>
+      <span class="word"><span class="word-inner">the</span></span>
+      <span class="word"><span class="word-inner">rules.</span></span>
+    </h1>
+    <p class="page-sub" id="pageSub">Knowledge is the only weapon they can't take from you. Six document types. Six sets of rights. All free.</p>
+    <div class="brass-rule" id="brassRule"></div>
+    <div class="scroll-hint" id="scrollHint">
+      <div class="scroll-hint-line"></div>
+      <span class="scroll-hint-text">Scroll</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-outer" id="tabsOuter">
+    <div class="tabs-intro">
+      <div class="tabs-intro-label">Choose Your Document Type</div>
+      <h2 class="tabs-intro-title">What letter are you fighting?</h2>
+    </div>
+    <div class="tabs-row" id="tabsRow">
+      <div class="tab-indicator" id="tabIndicator"></div>
+
+      <div class="tab active" data-tab="insurance">
+        <svg class="tab-icon" viewBox="0 0 28 28" fill="none">
+          <path d="M14 3L4 7.5V14.5C4 19.5 8.5 23.5 14 25C19.5 23.5 24 19.5 24 14.5V7.5L14 3Z" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="10" y1="14" x2="18" y2="14" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="14" y1="10" x2="14" y2="18" stroke="#9a7b4f" stroke-width="1.5"/>
+        </svg>
+        <span class="tab-label">Insurance</span>
+        <span class="tab-count">6</span>
+      </div>
+
+      <div class="tab" data-tab="eviction">
+        <svg class="tab-icon" viewBox="0 0 28 28" fill="none">
+          <path d="M3 14L14 4L25 14" stroke="#9a7b4f" stroke-width="1.5"/>
+          <rect x="8" y="14" width="12" height="11" stroke="#9a7b4f" stroke-width="1.5"/>
+          <circle cx="20" cy="10" r="4" stroke="#9a7b4f" stroke-width="1.5"/>
+          <path d="M18.6 8.6 L21.4 11.4 M21.4 8.6 L18.6 11.4" stroke="#9a7b4f" stroke-width="1.5"/>
+        </svg>
+        <span class="tab-label">Eviction</span>
+        <span class="tab-count">6</span>
+      </div>
+
+      <div class="tab" data-tab="benefits">
+        <svg class="tab-icon" viewBox="0 0 28 28" fill="none">
+          <path d="M14 3L5 7.5V14C5 19 8.8 23 14 24.5C19.2 23 23 19 23 14V7.5L14 3Z" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="9.5" y1="14" x2="18.5" y2="14" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="9.5" y1="10" x2="18.5" y2="18" stroke="#9a7b4f" stroke-width="1.5" opacity=".7"/>
+          <line x1="18.5" y1="10" x2="9.5" y2="18" stroke="#9a7b4f" stroke-width="1.5" opacity=".7"/>
+        </svg>
+        <span class="tab-label">Benefits</span>
+        <span class="tab-count">6</span>
+      </div>
+
+      <div class="tab" data-tab="school">
+        <svg class="tab-icon" viewBox="0 0 28 28" fill="none">
+          <polygon points="14,3 25,8.5 14,14 3,8.5" stroke="#9a7b4f" stroke-width="1.5" fill="none"/>
+          <path d="M7 10.5V18C7 18 10 22 14 22C18 22 21 18 21 18V10.5" stroke="#9a7b4f" stroke-width="1.5" fill="none"/>
+          <line x1="5" y1="5" x2="23" y2="21" stroke="#9a7b4f" stroke-width="1.5" opacity=".5"/>
+        </svg>
+        <span class="tab-label">School</span>
+        <span class="tab-count">6</span>
+      </div>
+
+      <div class="tab" data-tab="medical">
+        <svg class="tab-icon" viewBox="0 0 28 28" fill="none">
+          <rect x="4" y="4" width="20" height="20" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="14" y1="8" x2="14" y2="20" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="8" y1="14" x2="20" y2="14" stroke="#9a7b4f" stroke-width="1.5"/>
+          <circle cx="20" cy="20" r="5" fill="#080c14" stroke="#9a7b4f" stroke-width="1.5"/>
+          <text x="20" y="23" font-family="DM Sans" font-size="6" fill="#9a7b4f" font-weight="500" text-anchor="middle">$</text>
+        </svg>
+        <span class="tab-label">Medical</span>
+        <span class="tab-count">6</span>
+      </div>
+
+      <div class="tab" data-tab="credit">
+        <svg class="tab-icon" viewBox="0 0 28 28" fill="none">
+          <rect x="2" y="7" width="24" height="16" stroke="#9a7b4f" stroke-width="1.5"/>
+          <line x1="2" y1="13" x2="26" y2="13" stroke="#9a7b4f" stroke-width="1.5"/>
+          <circle cx="8" cy="19" r="3" stroke="#9a7b4f" stroke-width="1"/>
+          <text x="19" y="22" font-family="DM Sans" font-size="8" fill="#9a7b4f" font-weight="500" text-anchor="middle">?</text>
+        </svg>
+        <span class="tab-label">Credit</span>
+        <span class="tab-count">6</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-wrap">
+    <div class="content-area" id="contentArea">
+      <div class="content-grid">
+        <!-- LEFT: QUICK REFERENCE -->
+        <div class="left-panel">
+          <div class="panel-label" id="panelLabel">Quick Reference</div>
+          <div class="rights-search-wrap">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="6" cy="6" r="4.5" stroke="#8a9bb0" stroke-width="1.2"/>
+              <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="#8a9bb0" stroke-width="1.2"/>
+            </svg>
+            <input class="rights-search" id="rightsSearch" type="text" placeholder="Search your rights…" autocomplete="off">
+          </div>
+          <div class="rights-list" id="rightsList"></div>
+          <a class="jump-btn" href="annalyzer.html">
+            Analyze My Letter
+            <span class="jump-btn-arrow">→</span>
+          </a>
+        </div>
+        <!-- RIGHT: ACCORDIONS -->
+        <div class="accordion-col" id="accordionCol"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT STRIP -->
+  <div class="stat-strip">
+    <span class="stat-eyebrow" id="statEyebrow">Key Statistic</span>
+    <span class="stat-number" id="statNum">—</span>
+    <span class="stat-label" id="statLabel"></span>
+    <span class="stat-source" id="statSource"></span>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <p class="cta-headline" id="ctaHeadline">Now that you know your rights — <span style="color: var(--brass)">See the system.</span></p>
+    <p class="cta-sub" id="ctaSub">Interactive visualization shows how denials are systematically generated.</p>
+    <a href="TheDenialMachine.html" class="btn-filled">
+      Explore The Denial Machine <span class="btn-arrow">→</span>
+    </a>
+    <a href="annalyzer.html" class="btn-secondary">
+      Analyze My Letter <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- SOURCES -->
+  <div id="sources">
+    <span class="sources-label">Sources</span>
+    <div class="sources-content">
+      <a href="https://www.cms.gov/" target="_blank">CMS.gov</a> ·
+      <a href="https://www.consumerfinance.gov/" target="_blank">CFPB</a> ·
+      <a href="https://www.hud.gov/" target="_blank">HUD.gov</a> ·
+      <a href="https://nces.ed.gov/" target="_blank">NCES</a> ·
+      <a href="https://www.ssa.gov/" target="_blank">SSA</a> ·
+      <a href="https://www.ftc.gov/" target="_blank">FTC</a>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── Lenis ── */
+    if (!reduced) {
+      try {
+        const lenis = new Lenis({ duration: 1.4, easing: t => 1 - Math.pow(1-t,4), smoothWheel: true, wheelMultiplier: 0.85 });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add(t => lenis.raf(t*1000));
+        gsap.ticker.lagSmoothing(0);
+      } catch(e) {}
+    }
+
+    /* ── Progress bar ── */
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      document.getElementById('progress-bar').style.width = (h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+    }, { passive: true });
+
+    /* ── Cursor ── */
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx=-200, my=-200, rx=-200, ry=-200;
+    window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function tick() {
+      dot.style.transform = `translate(${mx-3.5}px,${my-3.5}px)`;
+      rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+      ring.style.transform = `translate(${rx-19}px,${ry-19}px)`;
+      requestAnimationFrame(tick);
+    })();
+    document.addEventListener('mousedown', () => ring.classList.add('clicking'));
+    document.addEventListener('mouseup', () => ring.classList.remove('clicking'));
+    document.addEventListener('mouseleave', () => { dot.style.opacity='0'; ring.style.opacity='0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity='1'; ring.style.opacity='1'; });
+
+    function registerHovers() {
+      document.querySelectorAll('a,button,.tab,.acc-header,.right-item').forEach(el => {
+        if (el._hoverBound) return; el._hoverBound = true;
+        el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+      });
+    }
+
+    /* ── Navbar ── */
+    ScrollTrigger.create({ start:'top -50', end:99999, toggleClass:{className:'nav-scrolled',targets:'#navbar'} });
+
+    /* ── Hero entrance ── */
+    window.addEventListener('load', () => {
+      if (!reduced) {
+        const tl = gsap.timeline({ defaults: { ease:'power4.out' } });
+        tl.to('.nav-logo-inner', { y:0, duration:.9 }, 0.1);
+        tl.to('#eyebrow', { opacity:1, y:0, duration:.7, ease:'power3.out' }, 0.5);
+        tl.to(['#headerOrb1','#headerOrb2'], { opacity:1, duration:2.8, ease:'power2.out', stagger:.3 }, 0.3);
+        tl.to('#headerBgText', { opacity:1, y:0, duration:1.8, ease:'power3.out' }, 0.4);
+        tl.to('.word-inner', { y:0, duration:1.1, stagger:{each:.065}, ease:'power4.out' }, 0.55);
+        tl.to('#pageSub', { opacity:1, y:0, duration:.9, ease:'power3.out' }, 1.1);
+        tl.to('#brassRule', { width:'calc(100% - 120px)', duration:1.8, ease:'expo.inOut' }, 1.2);
+        tl.to('#scrollHint', { opacity:1, duration:.6 }, 2.0);
+        // Tab bar entrance
+        gsap.fromTo('#tabsOuter', { opacity:0, y:28 }, { opacity:1, y:0, duration:.9, ease:'power3.out', scrollTrigger:{ trigger:'#tabsOuter', start:'top 90%' } });
+      }
+      renderContent('insurance', false);
+      registerHovers();
+
+      // Stat strip
+      gsap.fromTo('.stat-number', { opacity:0, y:30 }, { opacity:1, y:0, duration:1, ease:'power3.out', scrollTrigger:{ trigger:'.stat-strip', start:'top 80%' } });
+
+      // CTA
+      gsap.fromTo(['#ctaHeadline','#ctaSub','.btn-filled'], { opacity:0, y:28 }, { opacity:1, y:0, duration:.9, ease:'power3.out', stagger:.15, scrollTrigger:{ trigger:'.bottom-cta', start:'top 82%' } });
+    });
+
+    /* ── DATA ── */
+    const DATA = {
+      insurance: {
+        rights: [
+          "Right to a written explanation of every denial citing specific policy sections.",
+          "Insurers must disclose clinical peer-review criteria used for the denial on request.",
+          "You are entitled to a free, complete copy of your claim file within 30 days.",
+          "Automatic right to an independent external review after internal appeals are exhausted.",
+          "Strict 60-day deadline for insurers to decide on non-urgent medical appeals.",
+          "Right to continue treatment during the appeal process for ongoing care."
+        ],
+        accordions: [
+          {
+            title: "The Disclosure Requirement",
+            badge: "No Surprises Act",
+            content: `<p class="acc-text">By federal law, your insurer is required to provide a written denial notice (Explanation of Benefits or EOB) that includes the specific diagnostic and treatment codes, the clinical basis for the denial, and a clear step-by-step explanation of the appeal process.</p>
+<p class="acc-text">If they claim a procedure is "experimental" or "not medically necessary," they must disclose the internal guidelines or peer-reviewed literature used to make that determination. Failing to do so is itself a violation you can use in your appeal.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/><line x1="4" y1="6" x2="8" y2="6" stroke="#9a7b4f" stroke-width="1"/><line x1="6" y1="4" x2="6" y2="8" stroke="#9a7b4f" stroke-width="1"/></svg>ERISA Section 503 · ACA § 2719</div>`
+          },
+          {
+            title: "Statutory Appeal Rights",
+            badge: "ACA / ERISA",
+            content: `<p class="acc-text">Under the Affordable Care Act, you have the right to at least one internal appeal reviewed by someone not involved in the original denial. If upheld, you have the right to an External Review conducted by an Independent Review Organization (IRO). The IRO's decision is binding on the insurer.</p>
+<p class="acc-text">For employer-sponsored plans, ERISA provides additional procedural rights, including access to all documents and the right to bring a civil action in federal court if the appeal is wrongly denied.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>29 U.S.C. § 1132 · 45 CFR § 147.136</div>`
+          },
+          {
+            title: "The Clinical Rebuttal Strategy",
+            badge: "Tactical",
+            content: `<div class="acc-steps">
+<div class="acc-step"><div class="step-num">1</div><div class="step-body"><p class="step-title">Request full claim file</p><p class="step-desc">Under ERISA, formally request all "pertinent documents" — including the reviewer's name, credentials, and specialty.</p></div></div>
+<div class="acc-step"><div class="step-num">2</div><div class="step-body"><p class="step-title">Demand a Peer-to-Peer review</p><p class="step-desc">Have your physician demand a phone call with the insurer's medical director before any adverse determination becomes final.</p></div></div>
+<div class="acc-step"><div class="step-num">3</div><div class="step-body"><p class="step-title">Submit a Medical Necessity Letter</p><p class="step-desc">Have your doctor write a detailed letter citing CPT codes, ICD-10 codes, and peer-reviewed literature supporting the procedure.</p></div></div>
+</div>`
+          }
+        ],
+        stat: { eyebrow: "Key Statistic", display: "72%", label: "Of appealed insurance denials are overturned in the patient's favor", source: "US Government Accountability Office" }
+      },
+      eviction: {
+        rights: [
+          "Right to 'Proper Service' — notice must be physically served exactly as state law dictates.",
+          "The Implied Warranty of Habitability: your right to a safe, livable environment.",
+          "Protection against Retaliatory Eviction for reporting safety or health code violations.",
+          "Right to an 'Order to Show Cause' to delay eviction in emergency circumstances.",
+          "Entitlement to a 'Cure Period' to resolve lease violations before any court filing.",
+          "Access to court-appointed mediation services in most jurisdictions."
+        ],
+        accordions: [
+          {
+            title: "Procedural Defects",
+            badge: "Most Powerful Defense",
+            content: `<p class="acc-text">Eviction is a summary proceeding, meaning the landlord must follow procedural requirements to the letter. A misspelled name, incorrect rent calculation, missing required language, or improper service method can be sufficient for a court to dismiss the entire case without prejudice.</p>
+<p class="acc-text">Check the notice for: correct legal name, exact amount owed (no estimates), proper notice period for your state, service method, and mandatory statutory language your jurisdiction requires.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>State Unlawful Detainer Statutes</div>`
+          },
+          {
+            title: "The Habitability Defense",
+            badge: "Rent Withholding",
+            content: `<p class="acc-text">In almost every state, the landlord's failure to maintain habitable conditions (heat, water, structural safety, pest control) is an affirmative defense in a non-payment case. You can raise this defense to offset or eliminate claimed back-rent.</p>
+<p class="acc-text">Document everything: photos with timestamps, written repair requests sent via certified mail, and any health or building department inspection records. This transforms a simple non-payment case into a complex habitability dispute the landlord will likely want to settle.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>Restatement (Second) of Property § 5.1</div>`
+          }
+        ],
+        stat: { eyebrow: "Key Statistic", display: "50%", label: "Of eviction filings contain legal defects sufficient to challenge the notice", source: "National Housing Law Project" }
+      },
+      benefits: {
+        rights: [
+          "Right to a Fair Hearing with an impartial Administrative Law Judge (ALJ).",
+          "You must receive 10–60 days advance notice before any reduction in benefits.",
+          "Right to examine and copy all evidence in your agency file prior to any hearing.",
+          "Entitlement to professional representation — attorney or non-attorney advocate.",
+          "Right to continued benefits while an appeal of a termination is pending.",
+          "Access to free interpreter services for all hearings and correspondence."
+        ],
+        accordions: [
+          {
+            title: "The Grid Rules (SSDI)",
+            badge: "Social Security",
+            content: `<p class="acc-text">For SSDI, the agency uses "Medical-Vocational Guidelines" (The Grid) to determine whether, given your age, education, and past work experience, you can perform any jobs that exist in the national economy.</p>
+<p class="acc-text">Understanding how to properly document your Residual Functional Capacity (RFC) — the most you can still do despite your limitations — is the single most important factor in winning a benefits case. Your treating physician's detailed Medical Source Statement (MSS) is the most powerful document in an appeal.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>20 CFR § 404.1520 · SSR 96-8p</div>`
+          },
+          {
+            title: "Submitting New Evidence",
+            badge: "Tactical",
+            content: `<p class="acc-text">You can submit new evidence at any level of the appeal process. The Appeals Council must consider new and material evidence that is chronologically relevant to your claim period.</p>
+<p class="acc-text">Critical evidence: treating physician opinion letters, functional capacity evaluations, mental health assessments, pharmacy records, and any records the agency failed to request. Always request your complete file before submitting new evidence so you can identify the gaps.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>42 U.S.C. § 405(g) · 20 CFR § 404.970</div>`
+          }
+        ],
+        stat: { eyebrow: "Key Statistic", display: "63%", label: "Of SSDI appeals succeed when heard by an Administrative Law Judge", source: "Social Security Administration" }
+      },
+      school: {
+        rights: [
+          "Procedural Due Process: written notice of charges and an opportunity to be heard.",
+          "Right to a Manifestation Determination for students with IEPs or 504 plans.",
+          "Entitlement to an Alternative Educational Setting during any long-term suspension.",
+          "Right to call witnesses and cross-examine administrators in formal hearings.",
+          "Protection against Zero Tolerance policies that fail to consider circumstances.",
+          "Right to have disciplinary records expunged if charges are dismissed."
+        ],
+        accordions: [
+          {
+            title: "Procedural Due Process (Goss v. Lopez)",
+            badge: "US Supreme Court",
+            content: `<p class="acc-text">The landmark Supreme Court decision in Goss v. Lopez (1975) established that public school students have a property interest in their education. Before any suspension, even a 1-day suspension, the school must provide: (1) oral or written notice of the charges, (2) an explanation of the evidence, and (3) an opportunity to present their side.</p>
+<p class="acc-text">For suspensions exceeding 10 days, the due process requirements are substantially higher, requiring a formal hearing with advance written notice, the right to be represented, and a right to appeal the decision.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>419 U.S. 565 (1975) · IDEA § 615(k)</div>`
+          },
+          {
+            title: "Special Education Safeguards (IDEA)",
+            badge: "Federal Mandate",
+            content: `<p class="acc-text">Under the Individuals with Disabilities Education Act (IDEA), if a student's conduct was a direct result of their disability (a "Manifestation"), the school cannot suspend them for more than 10 cumulative days in a school year without conducting a Functional Behavioral Assessment (FBA) and revising their Behavior Intervention Plan (BIP).</p>
+<p class="acc-text">Parents have the right to request an Individualized Education Program (IEP) meeting within 10 days of any significant disciplinary action. A failure to convene this meeting is an independent procedural violation that can be raised in a due process complaint.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>20 U.S.C. § 1415(k)</div>`
+          }
+        ],
+        stat: { eyebrow: "Key Threshold", display: "10 Days", label: "Maximum suspension before a formal hearing with due process rights is legally required", source: "US Supreme Court (Goss v. Lopez)" }
+      },
+      medical: {
+        rights: [
+          "The No Surprises Act (2022) protects against unexpected out-of-network charges.",
+          "Right to a Good Faith Estimate (GFE) for the cost of scheduled procedures.",
+          "Right to request an itemized audit of bills for duplicate or upcoded items.",
+          "Statutory right to access your Electronic Health Records without unreasonable delay.",
+          "Protection against aggressive debt collection while a medical bill is under dispute.",
+          "Right to Charity Care / Financial Assistance (for non-profit hospitals under the ACA)."
+        ],
+        accordions: [
+          {
+            title: "The Upcoding Audit",
+            badge: "Billing Dispute",
+            content: `<p class="acc-text">Medical billing is systematically prone to "upcoding" — where providers bill for a more expensive service than was actually performed, and "unbundling" — where a procedure that should be billed as a single code is broken into multiple expensive codes. Both are violations of federal law.</p>
+<p class="acc-text">Request an itemized bill with CPT (Current Procedural Terminology) and ICD-10 codes. Then request your medical records and compare. Any discrepancy between what was done and what was billed is the basis of a formal dispute and, in serious cases, a False Claims Act complaint.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>42 U.S.C. § 1320a-7b · No Surprises Act (2022)</div>`
+          },
+          {
+            title: "Charity Care & Financial Assistance",
+            badge: "Free Debt Relief",
+            content: `<p class="acc-text">Under the ACA, every non-profit hospital (which is most hospitals) must have a written Financial Assistance Policy (FAP). They are legally required to provide free or discounted care to patients within certain income thresholds, and they must tell you about it.</p>
+<p class="acc-text">If a hospital failed to screen you for financial assistance before sending your bill to collections, they have violated IRS rules and your state's consumer protection laws. This is grounds to demand the collection account be recalled and your application be processed — which can result in 100% forgiveness.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>IRC § 501(r) · ACA § 9007</div>`
+          }
+        ],
+        stat: { eyebrow: "Key Statistic", display: "80%", label: "Of hospital bills contain at least one verifiable coding or billing error", source: "Equifax Healthcare Audit Report" }
+      },
+      credit: {
+        rights: [
+          "The FCRA gives you the right to dispute any inaccurate or unverifiable information.",
+          "Bureaus must remove information they cannot verify within 30 days of your dispute.",
+          "Right to a 7-year extended fraud alert and free security freeze after identity theft.",
+          "Right to a Section 605B block of all information resulting from identity theft.",
+          "Creditors must notify you if they take Adverse Action based on your credit report.",
+          "Right to sue for actual and punitive damages for willful FCRA violations."
+        ],
+        accordions: [
+          {
+            title: "The 30-Day Verification Trap",
+            badge: "FCRA § 611",
+            content: `<p class="acc-text">Once you file a formal dispute, the credit bureau has exactly 30 days to investigate (45 days if you send additional information). During that period, they must forward your dispute to the creditor who reported the data and request verification.</p>
+<p class="acc-text">If the creditor does not respond, or cannot provide adequate documentation of the debt, the bureau MUST legally delete the entry from your report. Many collection accounts are sold multiple times and the documentation trail is broken — this is the single most exploitable procedural gap in credit law.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>15 U.S.C. § 1681i · FCRA § 611</div>`
+          },
+          {
+            title: "Certified Mail — Never Digital",
+            badge: "Critical Tactic",
+            content: `<p class="acc-text">Always send disputes to credit bureaus via Certified Mail with Return Receipt Requested. This creates a legally verifiable timestamp that starts the 30-day clock and provides admissible evidence if you later sue for FCRA violations.</p>
+<p class="acc-text">Disputing online through the bureau's website is designed to be convenient for the bureau, not for you. Many online dispute systems require you to agree to terms that restrict your right to bring legal action and limit the investigation to automated processes only. Avoid them entirely.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>15 U.S.C. § 1681n · FCRA § 616</div>`
+          },
+          {
+            title: "The 605B Identity Theft Block",
+            badge: "Identity Theft",
+            content: `<p class="acc-text">Under Section 605B of the FCRA, if you have a police report or identity theft report documenting the fraud, the credit bureaus are required to block the fraudulent information from appearing on your report within 4 business days of receiving your request — not 30.</p>
+<p class="acc-text">This is distinct from a standard dispute. The block is absolute and must include: a copy of the identity theft report, proof of your identity, a description of the information to be blocked, and a statement that it resulted from identity theft. Send all three bureaus simultaneously via certified mail.</p>
+<div class="law-badge"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" stroke="#9a7b4f" stroke-width="1"/></svg>15 U.S.C. § 1681c-2 · FCRA § 605B</div>`
+          }
+        ],
+        stat: { eyebrow: "Key Statistic", display: "1 in 5", label: "Americans have a verified error on at least one of their three credit reports", source: "Federal Trade Commission" }
+      }
+    };
+
+    /* ── RENDER FUNCTION ── */
+    function renderContent(tabKey, animate) {
+      const d = DATA[tabKey] || DATA.insurance;
+      const rl = document.getElementById('rightsList');
+      const ac = document.getElementById('accordionCol');
+      const ca = document.getElementById('contentArea');
+      const searchInput = document.getElementById('rightsSearch');
+
+      if (animate) {
+        ca.classList.add('fading');
+        searchInput.value = '';
+      }
+
+      const doRender = () => {
+        // Rights list
+        rl.innerHTML = d.rights.map((r, i) => `
+          <div class="right-item">
+            <span class="right-item-num">${String(i+1).padStart(2,'0')}</span>
+            <span class="right-text">${r}</span>
+            <button class="copy-right-btn" title="Copy" onclick="copyRight(this, '${r.replace(/'/g,"\\'")}')">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                <rect x="4" y="4" width="8" height="8" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2 10V2H10" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              </svg>
+            </button>
+          </div>`).join('');
+
+        // Accordions
+        ac.innerHTML = d.accordions.map((a, i) => `
+          <div class="acc-item">
+            <div class="acc-header" data-index="${i}">
+              <div class="acc-header-left">
+                <span class="acc-num">${String(i+1).padStart(2,'0')}</span>
+                <span class="acc-title">${a.title}</span>
+              </div>
+              <svg class="acc-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <line x1="8" y1="3" x2="8" y2="13" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="3" y1="8" x2="13" y2="8" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="acc-body">
+              <div class="acc-content">${a.content}</div>
+            </div>
+          </div>`).join('');
+
+        // Stat strip
+        document.getElementById('statEyebrow').textContent = d.stat.eyebrow;
+        document.getElementById('statNum').textContent = d.stat.display;
+        document.getElementById('statLabel').textContent = d.stat.label;
+        document.getElementById('statSource').textContent = 'Source: ' + d.stat.source;
+
+        // Re-attach accordion logic
+        document.querySelectorAll('.acc-header').forEach(header => {
+          header.addEventListener('click', () => {
+            const isOpen = header.classList.contains('open');
+            // Close all others
+            document.querySelectorAll('.acc-header').forEach(h => {
+              h.classList.remove('open');
+              h.nextElementSibling.classList.remove('open');
+            });
+            if (!isOpen) {
+              header.classList.add('open');
+              const body = header.nextElementSibling;
+              body.classList.add('open');
+              if (!reduced) {
+                gsap.fromTo(body.querySelector('.acc-content'),
+                  { opacity: 0, y: 12 },
+                  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
+                );
+              }
+            }
+          });
+        });
+
+        if (animate) ca.classList.remove('fading');
+
+        // Animate in
+        if (!reduced) {
+          gsap.fromTo('.right-item',
+            { opacity: 0, x: -14 },
+            { opacity: 1, x: 0, duration: 0.5, ease: 'power2.out', stagger: 0.06 }
+          );
+          gsap.fromTo('.acc-item',
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.1, delay: 0.1 }
+          );
+        }
+
+        registerHovers();
+      };
+
+      if (animate) setTimeout(doRender, 220); else doRender();
+    }
+
+    /* ── TAB SWITCHING with indicator ── */
+    const tabsRow = document.getElementById('tabsRow');
+    const indicator = document.getElementById('tabIndicator');
+
+    function moveIndicator(tabEl) {
+      const rowRect = tabsRow.getBoundingClientRect();
+      const tabRect = tabEl.getBoundingClientRect();
+      indicator.style.left = (tabRect.left - rowRect.left + tabsRow.scrollLeft) + 'px';
+      indicator.style.width = tabRect.width + 'px';
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        moveIndicator(tab);
+        renderContent(tab.dataset.tab, true);
+      });
+      tab.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+      tab.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+    });
+
+    // Init indicator position
+    window.addEventListener('load', () => {
+      const activeTab = document.querySelector('.tab.active');
+      if (activeTab) setTimeout(() => moveIndicator(activeTab), 50);
+    });
+
+    /* ── SEARCH ── */
+    document.getElementById('rightsSearch').addEventListener('input', function() {
+      const q = this.value.trim().toLowerCase();
+      document.querySelectorAll('.right-item').forEach(item => {
+        const textEl = item.querySelector('.right-text');
+        const original = textEl.textContent;
+        if (!q) {
+          item.classList.remove('highlight-match', 'no-match');
+          textEl.innerHTML = original;
+          return;
+        }
+        const lower = original.toLowerCase();
+        if (lower.includes(q)) {
+          item.classList.add('highlight-match');
+          item.classList.remove('no-match');
+          // Highlight match
+          const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+          textEl.innerHTML = original.replace(re, '<mark>$1</mark>');
+        } else {
+          item.classList.remove('highlight-match');
+          item.classList.add('no-match');
+          textEl.innerHTML = original;
+        }
+      });
+    });
+
+    /* ── COPY RIGHT ── */
+    function copyRight(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        showToast('Copied to clipboard');
+        setTimeout(() => btn.classList.remove('copied'), 1800);
+      });
+    }
+
+    /* ── TOAST ── */
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+  </script>
+</body>
+</html>

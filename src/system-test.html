@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnDenied - Complete System Test</title>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            padding: 40px;
+            background: #080c14;
+            color: #ede8dc;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #0f1520;
+            border: 1px solid #1e2a3d;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .test-header {
+            color: #9a7b4f;
+            font-size: 18px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e2a3d;
+        }
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .pass { background: #2e7d32; color: white; }
+        .fail { background: #c62828; color: white; }
+        .pending { background: #f57c00; color: white; }
+        .test-btn {
+            background: #1a3a6b;
+            border: 1px solid #9a7b4f;
+            color: white;
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 8px;
+        }
+        .test-btn:hover {
+            background: #2a4a8b;
+        }
+        .results {
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            background: #000;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .nav-link {
+            background: #1e2a3d;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #9a7b4f;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            background: #2a3a4d;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 UnDenied Complete System Test</h1>
+    
+    <div class="test-section">
+        <div class="test-header">🌐 Navigation Links Test</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" target="_blank">🏠 Home</a>
+            <a href="annalyzer.html" class="nav-link" target="_blank">📄 Document Analyzer</a>
+            <a href="knowrights.html" class="nav-link" target="_blank">📚 Know Your Rights</a>
+            <a href="stories.html" class="nav-link" target="_blank">📖 Success Stories</a>
+            <a href="TheDenialMachine.html" class="nav-link" target="_blank">📊 The Denial Machine</a>
+            <a href="about.html" class="nav-link" target="_blank">🎯 About</a>
+        </div>
+        <p><strong>Instructions:</strong> Click each link above to verify they load correctly in a new tab.</p>
+    </div>
+
+    <div class="test-section">
+        <div class="test-header">🔧 System Components Test</div>
+        <button class="test-btn" onclick="runAllTests()">Run All Tests</button>
+        <button class="test-btn" onclick="testAPI()">Test API Connection</button>
+        <button class="test-btn" onclick="testAssets()">Test Assets</button>
+        <button class="test-btn" onclick="testConfig()">Test Configuration</button>
+        
+        <div id="testResults">
+            <div class="test-item">
+                <span>Server Status</span>
+                <span class="status pending" id="serverStatus">Pending</span>
+            </div>
+            <div class="test-item">
+                <span>API Configuration</span>
+                <span class="status pending" id="apiStatus">Pending</span>
+            </div>
+            <div class="test-item">
+                <span>Asset Loading</span>
+                <span class="status pending" id="assetStatus">Pending</span>
+            </div>
+            <div class="test-item">
+                <span>Navigation Links</span>
+                <span class="status pending" id="navStatus">Pending</span>
+            </div>
+            <div class="test-item">
+                <span>Document Analyzer</span>
+                <span class="status pending" id="analyzerStatus">Pending</span>
+            </div>
+        </div>
+        
+        <div class="results" id="results">Click "Run All Tests" to begin comprehensive system testing...</div>
+    </div>
+
+    <div class="test-section">
+        <div class="test-header">📊 Test Results Summary</div>
+        <div id="summary">
+            <p>Run tests to see summary...</p>
+        </div>
+    </div>
+
+    <script src="../src/config.js"></script>
+    <script>
+        const log = (msg) => {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.innerHTML += `[${timestamp}] ${msg}\n`;
+            results.scrollTop = results.scrollHeight;
+        };
+
+        const updateStatus = (id, status) => {
+            const element = document.getElementById(id);
+            element.className = `status ${status.toLowerCase()}`;
+            element.textContent = status;
+        };
+
+        const updateSummary = () => {
+            const statuses = ['serverStatus', 'apiStatus', 'assetStatus', 'navStatus', 'analyzerStatus'];
+            const results = statuses.map(id => {
+                const element = document.getElementById(id);
+                return element.textContent;
+            });
+            
+            const passed = results.filter(r => r === 'Pass').length;
+            const failed = results.filter(r => r === 'Fail').length;
+            const pending = results.filter(r => r === 'Pending').length;
+            
+            document.getElementById('summary').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
+                    <div style="color: #4caf50;">
+                        <div style="font-size: 24px; font-weight: bold;">${passed}</div>
+                        <div>Tests Passed</div>
+                    </div>
+                    <div style="color: #f44336;">
+                        <div style="font-size: 24px; font-weight: bold;">${failed}</div>
+                        <div>Tests Failed</div>
+                    </div>
+                    <div style="color: #ff9800;">
+                        <div style="font-size: 24px; font-weight: bold;">${pending}</div>
+                        <div>Tests Pending</div>
+                    </div>
+                </div>
+            `;
+        };
+
+        async function testAPI() {
+            log('🔍 Testing API Configuration...');
+            try {
+                if (!CONFIG || !CONFIG.GEMINI_API_KEY) {
+                    throw new Error('API key not found in CONFIG');
+                }
+                
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+                    method: 'GET',
+                    headers: {
+                        'x-goog-api-key': CONFIG.GEMINI_API_KEY.trim()
+                    }
+                });
+                
+                if (response.ok) {
+                    log('✅ API connection successful');
+                    updateStatus('apiStatus', 'Pass');
+                } else {
+                    throw new Error(`API returned ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`❌ API test failed: ${error.message}`);
+                updateStatus('apiStatus', 'Fail');
+            }
+            updateSummary();
+        }
+
+        async function testAssets() {
+            log('🔍 Testing Asset Loading...');
+            const assets = [
+                '../assets/css/css1.css',
+                '../assets/js/analyzer-backend.js',
+                '../assets/images/favicon_64.png'
+            ];
+            
+            let passed = 0;
+            for (const asset of assets) {
+                try {
+                    const response = await fetch(asset, { method: 'HEAD' });
+                    if (response.ok) {
+                        log(`✅ ${asset.split('/').pop()} loaded successfully`);
+                        passed++;
+                    } else {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    log(`❌ ${asset.split('/').pop()} failed: ${error.message}`);
+                }
+            }
+            
+            if (passed === assets.length) {
+                updateStatus('assetStatus', 'Pass');
+            } else {
+                updateStatus('assetStatus', 'Fail');
+            }
+            updateSummary();
+        }
+
+        function testConfig() {
+            log('🔍 Testing Configuration...');
+            try {
+                if (!CONFIG) {
+                    throw new Error('CONFIG object not found');
+                }
+                
+                if (!CONFIG.GEMINI_API_KEY) {
+                    throw new Error('GEMINI_API_KEY not found');
+                }
+                
+                if (!CONFIG.GEMINI_API_URL) {
+                    throw new Error('GEMINI_API_URL not found');
+                }
+                
+                log('✅ Configuration loaded successfully');
+                log(`📋 API Key: ${CONFIG.GEMINI_API_KEY.substring(0, 8)}...${CONFIG.GEMINI_API_KEY.slice(-4)}`);
+                log(`📋 API URL: ${CONFIG.GEMINI_API_URL}`);
+                updateStatus('serverStatus', 'Pass');
+            } catch (error) {
+                log(`❌ Configuration test failed: ${error.message}`);
+                updateStatus('serverStatus', 'Fail');
+            }
+            updateSummary();
+        }
+
+        async function testNavigation() {
+            log('🔍 Testing Navigation Links...');
+            const pages = [
+                'index.html',
+                'annalyzer.html', 
+                'knowrights.html',
+                'stories.html',
+                'TheDenialMachine.html',
+                'about.html'
+            ];
+            
+            let passed = 0;
+            for (const page of pages) {
+                try {
+                    const response = await fetch(page, { method: 'HEAD' });
+                    if (response.ok) {
+                        log(`✅ ${page} accessible`);
+                        passed++;
+                    } else {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    log(`❌ ${page} failed: ${error.message}`);
+                }
+            }
+            
+            if (passed === pages.length) {
+                updateStatus('navStatus', 'Pass');
+            } else {
+                updateStatus('navStatus', 'Fail');
+            }
+            updateSummary();
+        }
+
+        async function testAnalyzer() {
+            log('🔍 Testing Document Analyzer...');
+            try {
+                // Check if analyzer backend is accessible
+                const response = await fetch('../assets/js/analyzer-backend.js', { method: 'HEAD' });
+                if (response.ok) {
+                    log('✅ Analyzer backend accessible');
+                    
+                    // Check if system prompts are loaded
+                    if (typeof SYSTEM_PROMPTS !== 'undefined') {
+                        log('✅ System prompts loaded');
+                        updateStatus('analyzerStatus', 'Pass');
+                    } else {
+                        throw new Error('System prompts not loaded');
+                    }
+                } else {
+                    throw new Error(`Analyzer backend not accessible: ${response.status}`);
+                }
+            } catch (error) {
+                log(`❌ Analyzer test failed: ${error.message}`);
+                updateStatus('analyzerStatus', 'Fail');
+            }
+            updateSummary();
+        }
+
+        async function runAllTests() {
+            log('🚀 Starting comprehensive system test...');
+            updateSummary();
+            
+            await testConfig();
+            await testAPI();
+            await testAssets();
+            await testNavigation();
+            await testAnalyzer();
+            
+            log('🏁 All tests completed!');
+            updateSummary();
+        }
+
+        // Auto-run config test on page load
+        window.addEventListener('load', () => {
+            testConfig();
+        });
+    </script>
+</body>
+</html>

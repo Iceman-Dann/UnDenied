@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gemini API Multi-Test</title>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            padding: 40px;
+            background: #080c14;
+            color: #ede8dc;
+        }
+
+        .card {
+            background: #0f1520;
+            border: 1px solid #1e2a3d;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #1a3a6b;
+            border: 1px solid #9a7b4f;
+            color: white;
+            cursor: pointer;
+        }
+
+        .log {
+            font-family: monospace;
+            font-size: 12px;
+            background: #000;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-y: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+
+        .success {
+            color: #4caf50;
+        }
+
+        .error {
+            color: #f44336;
+        }
+
+        .warning {
+            color: #ff9800;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>UnDenied API Diagnostic Tool (v2.1)</h1>
+    <div class="card">
+        <p>Current Key: <code id="keyDisplay">AIza...CM</code></p>
+        <button onclick="runTests()">Run Comprehensive Tests</button>
+    </div>
+    <div id="log" class="log">Ready...</div>
+
+    <script src="../src/config.js"></script>
+    <script>
+        document.getElementById('keyDisplay').textContent = CONFIG.GEMINI_API_KEY.substring(0, 8) + '...' + CONFIG.GEMINI_API_KEY.slice(-4);
+
+        const log = (msg, type = '') => {
+            const div = document.getElementById('log');
+            const span = document.createElement('div');
+            span.className = type;
+            span.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            div.appendChild(span);
+            div.scrollTop = div.scrollHeight;
+        };
+
+        async function testEndpoint(name, url, method, useHeader) {
+            log(`Testing: ${name}...`);
+            try {
+                const body = {
+                    contents: [{ parts: [{ text: "Hi" }] }]
+                };
+
+                // Add model to body for some v1beta requirements
+                if (url.includes('models/')) {
+                    const modelPart = url.split('models/')[1].split(':')[0];
+                    body.model = `models/${modelPart}`;
+                }
+
+                const headers = { 'Content-Type': 'application/json' };
+                let finalUrl = url;
+
+                if (useHeader) {
+                    headers['x-goog-api-key'] = CONFIG.GEMINI_API_KEY.trim();
+                } else {
+                    finalUrl += (url.includes('?') ? '&' : '?') + 'key=' + CONFIG.GEMINI_API_KEY.trim();
+                }
+
+                const resp = await fetch(finalUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                });
+
+                const data = await resp.json();
+                if (resp.ok) {
+                    log(`✅ SUCCESS: ${name}`, 'success');
+                    return true;
+                } else {
+                    log(`❌ FAILED: ${name} (${resp.status}): ${data.error?.message || JSON.stringify(data)}`, 'error');
+                    return false;
+                }
+            } catch (e) {
+                log(`❌ ERROR: ${name}: ${e.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function listModelsTest() {
+            log("Running ListModels...");
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${CONFIG.GEMINI_API_KEY.trim()}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (resp.ok) {
+                    log("✅ SUCCESS: ListModels", 'success');
+                    const modelNames = data.models.map(m => m.name.split('/').pop());
+                    log("Available Models: " + modelNames.join(', '), 'warning');
+                    return modelNames;
+                } else {
+                    log(`❌ FAILED: ListModels (${resp.status}): ${data.error?.message}`, 'error');
+                    return [];
+                }
+            } catch (e) {
+                log(`❌ ERROR: ListModels: ${e.message}`, 'error');
+                return [];
+            }
+        }
+
+        async function runTests() {
+            document.getElementById('log').innerHTML = '';
+            log("Starting diagnostic suite...");
+
+            const discoveredModels = await listModelsTest();
+
+            const defaultModels = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro'];
+            const modelsToTry = discoveredModels.length > 0 ? discoveredModels : defaultModels;
+            const versions = ['v1beta', 'v1'];
+
+            for (const v of versions) {
+                for (const m of modelsToTry) {
+                    // Skip if m is not a model ID (some things in ListModels might not be)
+                    if (m === 'models') continue;
+
+                    const baseUrl = `https://generativelanguage.googleapis.com/${v}/models/${m}:generateContent`;
+
+                    // Test with header
+                    await testEndpoint(`${v} | ${m} | Header`, baseUrl, 'POST', true);
+
+                    // Test with query param
+                    await testEndpoint(`${v} | ${m} | QueryParam`, baseUrl, 'POST', false);
+                }
+            }
+
+            log("Diagnostics complete.");
+        }
+    </script>
+</body>
+
+</html>

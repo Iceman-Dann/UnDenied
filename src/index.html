@@ -1,0 +1,2334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnDenied - Fight Back against Wrongful Official Letters</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/images/favicon_64.png">
+    <style>
+        :root {
+            --bg: #080c14;
+            --surface: #0f1520;
+            --border: #1e2a3d;
+            --text: #ede8dc;
+            --text-secondary: #8a9bb0;
+            --brass: #9a7b4f;
+            --brass-light: #b8956a;
+            --navy: #1a3a6b;
+            --crimson: #8b1a1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+        }
+
+        body.custom-cursor {
+            cursor: none !important;
+        }
+
+        body.custom-cursor * {
+            cursor: none !important;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .cormorant {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            background: none;
+            border: none;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        /* Grain Overlay */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--border);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brass);
+        }
+
+        /* Custom Cursor */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--brass);
+            border-radius: 50% !important;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-ring {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(154, 123, 79, 0.4);
+            border-radius: 50% !important;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cursor-ring-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10px;
+            color: var(--brass);
+            opacity: 0;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .cursor-ring-denied {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 12px;
+            color: var(--crimson);
+            opacity: 0;
+            white-space: nowrap;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 72px;
+            padding: 0 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: transparent;
+            transition: background 0.4s, backdrop-filter 0.4s, border-bottom 0.4s;
+        }
+
+        .nav-scrolled {
+            background: rgba(8, 12, 20, 0.9);
+            backdrop-filter: blur(20px) saturate(1.8);
+            border-bottom: 1px solid rgba(30, 42, 61, 0.8);
+        }
+
+        .nav-left {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            color: var(--text);
+            clip-path: inset(0 100% 0 0);
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-link {
+            font-size: 12px;
+            font-variant: small-caps;
+            letter-spacing: 0.15em;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--brass);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--brass);
+            transition: width 0.25s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-right-btn {
+            background: var(--navy);
+            border: 1px solid var(--brass);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            padding: 14px 28px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .nav-right-btn:hover {
+            background: #1e4a8b;
+            border-color: var(--brass-light);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 1001;
+        }
+
+        .hamburger .line {
+            width: 24px;
+            height: 1px;
+            background: var(--brass);
+            transition: 0.3s;
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(8, 12, 20, 0.96);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mobile-overlay .nav-link {
+            font-size: 18px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        /* Hero */
+        .hero {
+            display: flex;
+            align-items: center;
+            height: 100vh;
+            padding: 0 60px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hero-left {
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            z-index: 2;
+        }
+
+        .hero-label {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hero-label-line {
+            width: 0;
+            height: 1px;
+            background: var(--brass);
+        }
+
+        .hero-label-text {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--brass);
+            opacity: 0;
+        }
+
+        .hero-headline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 80px;
+            line-height: 1.0;
+        }
+
+        .hero-headline .line {
+            overflow: hidden;
+        }
+
+        .hero-headline .italic {
+            font-style: italic;
+        }
+
+        .hero-subheadline {
+            font-size: 20px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 460px;
+        }
+
+        .hero-cta {
+            background: var(--navy);
+            border: 1px solid var(--brass);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            padding: 18px 42px;
+            width: fit-content;
+            opacity: 0;
+            transition: background 0.3s, border-color 0.3s;
+            display: inline-block;
+        }
+
+        .hero-cta:hover {
+            background: #1e4a8b;
+            border-color: var(--brass-light);
+        }
+
+        .hero-privacy {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+        }
+
+        .hero-privacy svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--brass);
+        }
+
+        .hero-privacy span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Hero Letter */
+        .hero-right {
+            width: 45%;
+            display: flex;
+            justify-content: center;
+            perspective: 1200px;
+            z-index: 2;
+        }
+
+        .letter-wrapper {
+            width: 320px;
+            height: 420px;
+            background: linear-gradient(145deg, #151c2b 0%, #0f1520 40%, #0a0f18 100%);
+            box-shadow: 0 60px 120px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(30, 42, 61, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02), inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+            padding: 48px 40px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .letterhead {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 40px;
+            opacity: 0.7;
+        }
+
+        .letterhead-line {
+            height: 1px;
+            background: #1e2a3d;
+        }
+
+        .letterhead-line:nth-child(1) {
+            width: 60px;
+        }
+
+        .letterhead-line:nth-child(2) {
+            width: 140px;
+        }
+
+        .letterhead-line:nth-child(3) {
+            width: 90px;
+        }
+
+        .letterbody {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0.4;
+        }
+
+        .letterbody-line {
+            width: 100%;
+            height: 1px;
+            background: #1e2a3d;
+        }
+
+        .denied-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-14deg) scale(2);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 56px;
+            color: var(--crimson);
+            letter-spacing: 0.08em;
+            border: 3px solid var(--crimson);
+            padding: 10px 20px;
+            text-shadow: 0 0 30px rgba(139, 26, 26, 0.6);
+            box-shadow: 0 0 0 1px rgba(139, 26, 26, 0.2), 0 0 40px rgba(139, 26, 26, 0.1);
+            opacity: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .letter-crack {
+            position: absolute;
+            inset: 0;
+            background: transparent;
+            opacity: 0;
+            clip-path: polygon(10% 0, 15% 10%, 8% 25%, 20% 40%, 15% 55%, 30% 70%, 25% 85%, 35% 100%, 45% 90%, 60% 100%, 75% 80%, 70% 65%, 85% 50%, 75% 35%, 90% 20%, 85% 0, 50% 15%);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .shatter-piece {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, #151c2b 0%, #0f1520 40%, #0a0f18 100%);
+            z-index: 100;
+            opacity: 0;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--brass);
+            opacity: 0.5;
+            width: 20px;
+        }
+
+        /* Horizontal Stats */
+        .stats {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stats-strip {
+            display: flex;
+            width: 400vw;
+            height: 100vh;
+            background: var(--surface);
+        }
+
+        .stat-panel {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+        }
+
+        .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 160px;
+            color: var(--brass);
+            line-height: 1;
+        }
+
+        .stat-tag {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-variant: small-caps;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+            max-width: 300px;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .stat-divider {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            height: 0;
+            background: var(--brass);
+            transform: translateX(-50%);
+        }
+
+        /* How It Works */
+        .how {
+            background: var(--bg);
+            padding: 140px 60px;
+            position: relative;
+        }
+
+        .section-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--brass);
+            text-align: center;
+            margin-bottom: 80px;
+            clip-path: inset(0 100% 0 0);
+        }
+
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 60px;
+            position: relative;
+        }
+
+        .how-connector {
+            position: absolute;
+            top: 64px;
+            left: 16.66%;
+            right: 16.66%;
+            height: 1px;
+            background: var(--border);
+            z-index: 1;
+        }
+
+        .how-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--brass);
+            position: absolute;
+            top: -2.5px;
+            left: 0;
+        }
+
+        .how-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .how-icon {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 28px;
+            background: var(--bg);
+        }
+
+        .how-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--brass);
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+        }
+
+        .how-step {
+            font-size: 11px;
+            color: var(--brass);
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+        }
+
+        .how-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+
+        .how-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 260px;
+        }
+
+        /* Document Types */
+        .docs {
+            background: var(--surface);
+            padding: 120px 60px;
+        }
+
+        .docs-header {
+            margin-bottom: 80px;
+        }
+
+        .docs-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--brass);
+            margin-bottom: 16px;
+        }
+
+        .docs-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 52px;
+            color: var(--text);
+            line-height: 1.1;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .doc-card {
+            background: var(--surface);
+            padding: 44px 40px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.8s cubic-bezier(0.1, 0.8, 0.2, 1), background 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .doc-noise {
+            position: absolute;
+            inset: 0;
+            opacity: 0.02;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        }
+
+        .doc-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 36px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .doc-icon {
+            width: 32px;
+            height: 32px;
+            stroke: var(--brass);
+            transition: transform 0.6s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .doc-arrow {
+            width: 24px;
+            height: 24px;
+            stroke: var(--text);
+            opacity: 0;
+            transform: translateX(-8px) translateZ(0);
+            transition: all 0.6s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .doc-card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            color: var(--text);
+            margin-bottom: 14px;
+            z-index: 2;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .doc-card-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex-grow: 1;
+            z-index: 2;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .doc-card-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--brass);
+            opacity: 0.6;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            z-index: 2;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .doc-card:hover {
+            background: #111827;
+            box-shadow: inset 2px 0 0 var(--brass), 0 30px 60px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .doc-card:hover .doc-arrow {
+            opacity: 1;
+            transform: translateX(0) translateZ(20px);
+        }
+
+        .doc-card:hover .doc-icon {
+            transform: scale(1.1) translateZ(20px);
+        }
+
+        .doc-card:hover .doc-card-title {
+            transform: translateZ(30px);
+        }
+
+        .doc-card:hover .doc-card-desc {
+            transform: translateZ(20px);
+        }
+
+        .doc-card:hover .doc-card-tag {
+            transform: translateZ(10px);
+        }
+
+        /* Privacy Pin */
+        .privacy {
+            background: #0a0f1a;
+            height: 500vh;
+            position: relative;
+        }
+
+        .privacy-inner {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .privacy-icon {
+            width: 64px;
+            height: 64px;
+            stroke: var(--brass);
+            margin-bottom: 60px;
+        }
+
+        .privacy-promises {
+            position: relative;
+            width: 100%;
+            margin: 40px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .privacy-line {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 54px;
+            color: var(--text);
+            line-height: 1.3;
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .privacy-desc {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--text-secondary);
+            text-align: center;
+            opacity: 0;
+            margin-top: 40px;
+            line-height: 1.6;
+        }
+
+        /* Marquee */
+        .marquee {
+            background: var(--surface);
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .marquee-inner {
+            display: inline-flex;
+        }
+
+        .marquee-content {
+            display: flex;
+            align-items: center;
+            padding-right: 40px;
+        }
+
+        .marquee-item {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-variant: small-caps;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+        }
+
+        .marquee-highlight {
+            color: var(--brass);
+        }
+
+        .marquee-sep {
+            color: var(--brass);
+            opacity: 0.4;
+            margin: 0 40px;
+            font-size: 10px;
+        }
+
+        /* Mission Strip */
+        .mission {
+            background: var(--surface);
+            padding: 120px 60px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mission-container {
+            max-width: 900px;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mission-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 300px;
+            color: var(--brass);
+            opacity: 0.03;
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 1;
+            line-height: 1;
+        }
+
+        .mission-rule {
+            width: 80px;
+            height: 1px;
+            background: var(--brass);
+            margin: 60px 0;
+        }
+
+        .mission-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 30px;
+            color: var(--text);
+            line-height: 1.9;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .mission-line {
+            clip-path: inset(0 100% 0 0);
+        }
+
+        /* Final CTA */
+        .final {
+            background: var(--bg);
+            padding: 160px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .final-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 62px;
+            color: var(--text);
+            line-height: 1.3;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .final-sub {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 18px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 56px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .final-btn {
+            background: var(--navy);
+            border: 1px solid var(--brass);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            padding: 18px 42px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .final-btn:hover {
+            background: #1e4a8b;
+            border-color: var(--brass-light);
+        }
+
+        .final-divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            margin-top: 80px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            padding: 64px 60px 40px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 48px;
+        }
+
+        .footer-left {
+            max-width: 220px;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .footer-desc {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .footer-center {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .footer-heading {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-variant: small-caps;
+            letter-spacing: 0.15em;
+            color: var(--brass);
+            margin-bottom: -8px;
+        }
+
+        .footer-link {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--brass);
+        }
+
+        .footer-right {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copy {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .footer-disclaimer {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            text-align: right;
+        }
+
+        /* Standard Navigation */
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .nav-logo-inner {
+            display: block;
+            transform: translateY(110%);
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-link {
+            font-size: 11px;
+            font-variant: small-caps;
+            letter-spacing: .18em;
+            color: var(--text-secondary);
+            transition: color .25s ease;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--brass);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--brass);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform .3s cubic-bezier(.25,1,.5,1);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .nav-cta {
+            background: var(--navy);
+            border: 1px solid rgba(154,123,79,.6);
+            color: var(--text);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .12em;
+            padding: 13px 26px;
+            transition: background .3s, border-color .3s, box-shadow .3s;
+        }
+
+        .nav-cta:hover {
+            background: #1e4a8b;
+            border-color: var(--brass-light);
+            box-shadow: 0 4px 24px rgba(26,58,107,.4);
+        }
+
+        .hero-cta {
+            background: var(--navy);
+            border: 1px solid var(--brass);
+            color: var(--text);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .12em;
+            padding: 13px 26px;
+            transition: background .3s, border-color .3s, box-shadow .3s;
+            display: inline-block;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .hero-cta-secondary {
+            background: transparent;
+            border: 1px solid var(--brass);
+            color: var(--brass);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .12em;
+            padding: 13px 26px;
+            transition: all .3s ease;
+            display: inline-block;
+            opacity: 0;
+        }
+
+        .hero-cta-secondary:hover {
+            background: var(--brass);
+            color: var(--bg);
+            border-color: var(--brass-light);
+        }
+
+        /* Featured Denial Machine Section */
+        .denial-machine-featured {
+            background: linear-gradient(135deg, var(--surface) 0%, #0a0f1a 100%);
+            padding: 120px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .featured-left {
+            z-index: 2;
+        }
+
+        .featured-headline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 300;
+            line-height: 1.2;
+            color: var(--text);
+            margin-bottom: 32px;
+        }
+
+        .featured-headline .highlight {
+            color: var(--brass);
+            font-weight: 500;
+        }
+
+        .featured-desc {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            max-width: 480px;
+        }
+
+        .featured-stats {
+            display: flex;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .featured-stat {
+            text-align: center;
+        }
+
+        .featured-stat .stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 42px;
+            font-weight: 600;
+            color: var(--brass);
+            margin-bottom: 8px;
+        }
+
+        .featured-stat .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-secondary);
+        }
+
+        .featured-cta {
+            background: var(--crimson);
+            border: 1px solid var(--crimson);
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            padding: 20px 40px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .featured-cta:hover {
+            background: #a02222;
+            border-color: var(--brass);
+            transform: translateY(-2px);
+        }
+
+        .featured-cta svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .featured-right {
+            position: relative;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .featured-visual {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .data-points {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--brass);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .point-1 { top: 20%; left: 15%; }
+        .point-2 { top: 30%; left: 70%; }
+        .point-3 { top: 60%; left: 25%; }
+        .point-4 { top: 75%; left: 60%; }
+        .point-5 { top: 85%; left: 40%; }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(154, 123, 79, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 40%, rgba(154, 123, 79, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 30% 70%, rgba(154, 123, 79, 0.1) 0%, transparent 50%);
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .nav-center,
+            .nav-right {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero {
+                height: auto;
+                padding: 120px 24px 60px;
+                flex-direction: column-reverse;
+                gap: 60px;
+            }
+
+            .hero-left,
+            .hero-right {
+                width: 100%;
+            }
+
+            .hero-headline {
+                font-size: 48px;
+                font-weight: 500;
+            }
+
+            .letter-wrapper {
+                transform: scale(0.85);
+                transform-origin: top center;
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(30, 42, 61, 0.6);
+            }
+
+            .scroll-indicator {
+                display: none;
+            }
+
+            .stats {
+                height: auto;
+            }
+
+            .stats-strip {
+                width: 100%;
+                height: auto;
+                flex-direction: column;
+            }
+
+            .stat-panel {
+                width: 100%;
+                height: auto;
+                padding: 60px 24px;
+            }
+
+            .how {
+                padding: 80px 24px;
+            }
+
+            .how-grid {
+                grid-template-columns: 1fr;
+                gap: 80px;
+            }
+
+            .how-connector {
+                display: none;
+            }
+
+            .docs {
+                padding: 80px 24px;
+            }
+
+            .docs-title {
+                font-size: 40px;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doc-card {
+                padding: 32px 24px;
+            }
+
+            .privacy {
+                height: 300vh;
+            }
+
+            .privacy-line {
+                font-size: 36px;
+            }
+
+            .mission {
+                padding: 80px 24px;
+            }
+
+            .mission-text {
+                font-size: 24px;
+                line-height: 1.6;
+            }
+
+            .final {
+                padding: 100px 24px 80px;
+            }
+
+            .final-title {
+                font-size: 40px;
+            }
+
+            .footer {
+                padding: 60px 24px 40px;
+            }
+
+            .footer-top {
+                flex-direction: column;
+                gap: 60px;
+                text-align: center;
+                align-items: center;
+            }
+
+            .footer-left {
+                max-width: 100%;
+            }
+
+            .footer-center,
+            .footer-right {
+                align-items: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-disclaimer {
+                text-align: center;
+                max-width: 100%;
+            }
+
+            .cursor-dot,
+            .cursor-ring {
+                display: none !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Grain Filter -->
+    <svg class="grain-overlay" xmlns="http://www.w3.org/2000/svg">
+        <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#grain)" />
+    </svg>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="nav-logo"><span class="nav-logo-inner">UnDenied</span></a>
+        <div class="nav-center">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="knowrights.html" class="nav-link">Know Your Rights</a>
+            <a href="stories.html" class="nav-link">Success Stories</a>
+            <a href="TheDenialMachine.html" class="nav-link">The Denial Machine</a>
+            <a href="about.html" class="nav-link">About</a>
+        </div>
+        <button class="nav-cta" onclick="window.location.href='annalyzer.html'">Analyze My Letter →</button>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-left">
+            <div class="hero-label">
+                <div class="hero-label-line"></div>
+                <span class="hero-label-text">FIGHT BACK</span>
+            </div>
+            <div class="hero-headline">
+                <div class="line normal-weight">People lose fights</div>
+                <div class="line italic">they should have won.</div>
+            </div>
+            <div class="hero-subheadline">
+                Not because they were wrong. Because the letter was designed to confuse them into giving up.
+            </div>
+            <div class="hero-cta-group">
+                <button class="hero-cta magnetic document-cta" onclick="window.location.href='annalyzer.html'">START
+                    FIGHTING
+                    BACK &mdash; FREE</button>
+                <button class="hero-cta-secondary magnetic" onclick="window.location.href='TheDenialMachine.html'">EXPLORE THE
+                    DENIAL
+                    MACHINE →</button>
+            </div>
+            <div class="hero-privacy">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>No account. No login. Nothing stored. Ever.</span>
+            </div>
+        </div>
+        <div class="hero-right">
+            <div class="letter-wrapper js-hover-letter">
+                <div class="letterhead">
+                    <div class="letterhead-line"></div>
+                    <div class="letterhead-line"></div>
+                    <div class="letterhead-line"></div>
+                </div>
+                <div class="letterbody">
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                    <div class="letterbody-line"></div>
+                </div>
+                <div class="denied-stamp">DENIED</div>
+                <div class="letter-crack"></div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6" />
+            </svg>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-strip">
+            <div class="stat-panel">
+                <div class="stat-content">
+                    <div class="stat-number stat-num-1">0</div>
+                    <div class="stat-tag">MEDICARE CLAIMS DENIED YEARLY</div>
+                    <div class="stat-divider"></div>
+                </div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-content">
+                    <div class="stat-number stat-num-2">0<span style="font-size:80px">%</span></div>
+                    <div class="stat-tag">OF PEOPLE NEVER APPEAL</div>
+                    <div class="stat-divider"></div>
+                </div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-content">
+                    <div class="stat-number stat-num-3">0<span style="font-size:80px">%</span></div>
+                    <div class="stat-tag">OF APPEALS WIN</div>
+                    <div class="stat-divider"></div>
+                </div>
+            </div>
+            <div class="stat-panel">
+                <div class="stat-content">
+                    <div class="stat-number stat-num-4">0<span style="font-size:80px">M+</span></div>
+                    <div class="stat-tag">WRONGFUL LETTERS YEARLY</div>
+                    <div class="stat-divider"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED DENIAL MACHINE SECTION -->
+    <section class="denial-machine-featured">
+        <div class="section-label">THE DENIAL MACHINE</div>
+        <div class="featured-content">
+            <div class="featured-left">
+                <div class="featured-headline">See the System That's <span class="highlight">Stacked Against You</span></div>
+                <div class="featured-desc">
+                    Interactive data visualization revealing how millions of wrongful denials are systematically generated. 
+                    Explore the patterns, understand the tactics, and see exactly how the system works against ordinary people.
+                </div>
+                <div class="featured-stats">
+                    <div class="featured-stat">
+                        <div class="stat-number">$2.4B</div>
+                        <div class="stat-label">Annual Wrongful Denials</div>
+                    </div>
+                    <div class="featured-stat">
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">Designed To Confuse</div>
+                    </div>
+                </div>
+                <button class="featured-cta magnetic" onclick="window.location.href='TheDenialMachine.html'">
+                    EXPLORE THE DENIAL MACHINE
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+            <div class="featured-right">
+                <div class="featured-visual">
+                    <div class="data-points">
+                        <div class="point point-1"></div>
+                        <div class="point point-2"></div>
+                        <div class="point point-3"></div>
+                        <div class="point point-4"></div>
+                        <div class="point point-5"></div>
+                    </div>
+                    <div class="connection-lines"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how">
+        <div class="section-label">HOW IT WORKS</div>
+        <div class="how-connector">
+            <div class="how-dot"></div>
+        </div>
+        <div class="how-grid">
+            <div class="how-card">
+                <div class="how-icon">
+                    <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="14" y="8" width="44" height="56"></rect>
+                        <line x1="24" y1="24" x2="48" y2="24"></line>
+                        <line x1="24" y1="36" x2="48" y2="36"></line>
+                        <line x1="24" y1="48" x2="40" y2="48"></line>
+                    </svg>
+                </div>
+                <div class="how-step">01</div>
+                <div class="how-title">Upload Notice</div>
+                <div class="how-desc">Paste or upload any confusing official letter directly in your browser.</div>
+            </div>
+            <div class="how-card">
+                <div class="how-icon">
+                    <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="30" cy="30" r="16"></circle>
+                        <line x1="41.3" y1="41.3" x2="56" y2="56"></line>
+                    </svg>
+                </div>
+                <div class="how-step">02</div>
+                <div class="how-title">AI Extraction</div>
+                <div class="how-desc">Our AI dissects the jargon, flags rights violations, and finds your appeal.</div>
+            </div>
+            <div class="how-card">
+                <div class="how-icon">
+                    <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="12" y="16" width="48" height="40"></rect>
+                        <path d="M12 16L36 36L60 16"></path>
+                    </svg>
+                </div>
+                <div class="how-step">03</div>
+                <div class="how-title">The Rebuttal</div>
+                <div class="how-desc">A legally-framed response generates instantly. Copy and send.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="docs">
+        <div class="docs-header">
+            <div class="docs-label">SIX LETTERS.</div>
+            <h2 class="docs-title">One tool.</h2>
+        </div>
+        <div class="docs-grid">
+            <div class="doc-card" onclick="window.location.href='annalyzer.html'">
+                <div class="doc-noise"></div>
+                <div class="doc-top">
+                    <svg class="doc-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="4" y="6" width="24" height="20"></rect>
+                        <line x1="8" y1="10" x2="24" y2="22"></line>
+                        <line x1="24" y1="10" x2="8" y2="22"></line>
+                    </svg>
+                    <svg class="doc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="doc-card-title">Insurance Denial</div>
+                <div class="doc-card-desc">Wrongful coverage denials designed to outlast your patience.</div>
+                <div class="doc-card-tag">72% OVERTURNED ON APPEAL</div>
+            </div>
+            <div class="doc-card" onclick="window.location.href='annalyzer.html'">
+                <div class="doc-noise"></div>
+                <div class="doc-top">
+                    <svg class="doc-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M16 4L4 14v14h24V14L16 4z"></path>
+                        <rect x="13" y="18" width="6" height="10"></rect>
+                    </svg>
+                    <svg class="doc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="doc-card-title">Eviction Notice</div>
+                <div class="doc-card-desc">Improper notices missing required legal disclosures.</div>
+                <div class="doc-card-tag">50% FILED ILLEGALLY</div>
+            </div>
+            <div class="doc-card" onclick="window.location.href='annalyzer.html'">
+                <div class="doc-noise"></div>
+                <div class="doc-top">
+                    <svg class="doc-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M16 4L4 8v8c0 7 12 12 12 12s12-5 12-12V8L16 4z"></path>
+                        <line x1="10" y1="16" x2="22" y2="16"></line>
+                    </svg>
+                    <svg class="doc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="doc-card-title">Benefits Rejection</div>
+                <div class="doc-card-desc">Government denials that 80% of people accept without question.</div>
+                <div class="doc-card-tag">80% WIN ON APPEAL</div>
+            </div>
+            <div class="doc-card" onclick="window.location.href='annalyzer.html'">
+                <div class="doc-noise"></div>
+                <div class="doc-top">
+                    <svg class="doc-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 10l12-6 12 6v4l-12 6-12-6v-4z"></path>
+                        <line x1="4" y1="32" x2="32" y2="4"></line>
+                    </svg>
+                    <svg class="doc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="doc-card-title">School Suspension</div>
+                <div class="doc-card-desc">Procedural violations that make suspensions legally contestable.</div>
+                <div class="doc-card-tag">60% VIOLATE DUE PROCESS</div>
+            </div>
+            <div class="doc-card" onclick="window.location.href='annalyzer.html'">
+                <div class="doc-noise"></div>
+                <div class="doc-top">
+                    <svg class="doc-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M16 4v24M4 16h24"></path>
+                    </svg>
+                    <svg class="doc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="doc-card-title">Medical Bill</div>
+                <div class="doc-card-desc">Billing errors on nearly every hospital statement issued.</div>
+                <div class="doc-card-tag">$2,400 AVG OVERCHARGE</div>
+            </div>
+            <div class="doc-card" onclick="window.location.href='annalyzer.html'">
+                <div class="doc-noise"></div>
+                <div class="doc-top">
+                    <svg class="doc-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="2" y="8" width="28" height="16"></rect>
+                        <line x1="2" y1="12" x2="30" y2="12"></line>
+                        <path d="M12 18h2M18 18h2"></path>
+                    </svg>
+                    <svg class="doc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <div class="doc-card-title">Credit Dispute</div>
+                <div class="doc-card-desc">Report errors that silently destroy credit scores for years.</div>
+                <div class="doc-card-tag">79% CONTAIN ERRORS</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="privacy">
+        <div class="privacy-inner">
+            <svg class="privacy-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="14" y="28" width="36" height="26"></rect>
+                <path d="M22 28V18a10 10 0 0 1 20 0v10"></path>
+            </svg>
+            <div class="privacy-promises">
+                <div class="privacy-line">No account.</div>
+                <div class="privacy-line">No login.</div>
+                <div class="privacy-line">Nothing stored.</div>
+                <div class="privacy-line">Close the tab and it disappears.</div>
+            </div>
+            <div class="privacy-desc">Your letter exists only in your browser.<br>We designed it that way on purpose.
+            </div>
+        </div>
+    </section>
+
+    <section class="marquee">
+        <div class="marquee-inner">
+            <div class="marquee-content">
+                <span class="marquee-item"><span class="marquee-highlight">INSURANCE</span> DENIAL <span
+                        class="marquee-sep">◆</span> EVICTION <span class="marquee-highlight">NOTICE</span> <span
+                        class="marquee-sep">◆</span> BENEFITS <span class="marquee-highlight">REJECTION</span> <span
+                        class="marquee-sep">◆</span> SCHOOL <span class="marquee-highlight">SUSPENSION</span> <span
+                        class="marquee-sep">◆</span> MEDICAL <span class="marquee-highlight">BILL</span> <span
+                        class="marquee-sep">◆</span> CREDIT <span class="marquee-highlight">DISPUTE</span> <span
+                        class="marquee-sep">◆</span></span>
+            </div>
+            <div class="marquee-content">
+                <span class="marquee-item"><span class="marquee-highlight">INSURANCE</span> DENIAL <span
+                        class="marquee-sep">◆</span> EVICTION <span class="marquee-highlight">NOTICE</span> <span
+                        class="marquee-sep">◆</span> BENEFITS <span class="marquee-highlight">REJECTION</span> <span
+                        class="marquee-sep">◆</span> SCHOOL <span class="marquee-highlight">SUSPENSION</span> <span
+                        class="marquee-sep">◆</span> MEDICAL <span class="marquee-highlight">BILL</span> <span
+                        class="marquee-sep">◆</span> CREDIT <span class="marquee-highlight">DISPUTE</span> <span
+                        class="marquee-sep">◆</span></span>
+            </div>
+            <div class="marquee-content">
+                <span class="marquee-item"><span class="marquee-highlight">INSURANCE</span> DENIAL <span
+                        class="marquee-sep">◆</span> EVICTION <span class="marquee-highlight">NOTICE</span> <span
+                        class="marquee-sep">◆</span> BENEFITS <span class="marquee-highlight">REJECTION</span> <span
+                        class="marquee-sep">◆</span> SCHOOL <span class="marquee-highlight">SUSPENSION</span> <span
+                        class="marquee-sep">◆</span> MEDICAL <span class="marquee-highlight">BILL</span> <span
+                        class="marquee-sep">◆</span> CREDIT <span class="marquee-highlight">DISPUTE</span> <span
+                        class="marquee-sep">◆</span></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="mission">
+        <div class="mission-container">
+            <div class="mission-quote">"</div>
+            <div class="mission-rule"></div>
+            <div class="mission-text">
+                <div class="mission-line">The letter was designed to make you give up.</div>
+                <div class="mission-line">Every legal term, every bureaucratic phrase,</div>
+                <div class="mission-line">every intimidating paragraph &mdash; designed to</div>
+                <div class="mission-line">exhaust you into silence.</div>
+                <div class="mission-line">UnDenied was built to end that.</div>
+            </div>
+            <div class="mission-rule"></div>
+        </div>
+    </section>
+
+    <section class="final">
+        <div class="final-title">The fight starts with<br>understanding the letter.</div>
+        <div class="final-sub">Paste yours in. It takes 30 seconds.</div>
+        <button class="final-btn magnetic" onclick="window.location.href='annalyzer.html'">ANALYZE MY LETTER
+            &rarr;</button>
+        <div class="final-divider"></div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-left">
+                <div class="footer-logo">UnDenied</div>
+                <div class="footer-desc">
+                    Free legal clarity for everyone.<br>
+                    No account. No data. No compromise.
+                </div>
+            </div>
+            <div class="footer-center">
+                <div class="footer-heading">NAVIGATE</div>
+                <a href="annalyzer.html" class="footer-link">Analyze My Letter &rarr;</a>
+                <a href="knowrights.html" class="footer-link">Know Your Rights &rarr;</a>
+                <a href="stories.html" class="footer-link">Success Stories &rarr;</a>
+                <a href="TheDenialMachine.html" class="footer-link">The Denial Machine &rarr;</a>
+                <a href="about.html" class="footer-link">About / Mission &rarr;</a>
+            </div>
+            <div class="footer-right">
+                <div class="footer-heading">PROJECT</div>
+                <a href="#" class="footer-link">GitHub</a>
+                <a href="stories.html#sources" class="footer-link">Sources &rarr;</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">&copy; 2026 UnDenied</div>
+            <div class="footer-disclaimer">UnDenied provides information only, not legal advice.</div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+    <script>
+
+        // Ensure GSAP plugins are registered
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Reduced motion check
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Lenis Smooth Scroll
+        let lenis;
+        if (!prefersReducedMotion) {
+            lenis = new Lenis({
+                duration: 1.4,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                orientation: 'vertical',
+                smoothWheel: true
+            });
+
+            lenis.on('scroll', ScrollTrigger.update);
+
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000);
+            });
+
+            gsap.ticker.lagSmoothing(0);
+
+            // Page Visibility API to pause Lenis when hidden
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    lenis.stop();
+                } else {
+                    lenis.start();
+                }
+            });
+        }
+
+        // Custom Cursor
+        if (!prefersReducedMotion) {
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorRing = document.querySelector('.cursor-ring');
+            const ringText = document.createElement('div');
+            ringText.classList.add('cursor-ring-text');
+            cursorRing.appendChild(ringText);
+            const ringDenied = document.createElement('div');
+            ringDenied.classList.add('cursor-ring-denied');
+            cursorRing.appendChild(ringDenied);
+
+            const xDot = gsap.quickTo(cursorDot, "x", { duration: 0.1, ease: "power3", xPercent: -50 });
+            const yDot = gsap.quickTo(cursorDot, "y", { duration: 0.1, ease: "power3", yPercent: -50 });
+            const xRing = gsap.quickTo(cursorRing, "x", { duration: 0.5, ease: "power3", xPercent: -50 });
+            const yRing = gsap.quickTo(cursorRing, "y", { duration: 0.5, ease: "power3", yPercent: -50 });
+
+            window.addEventListener("mousemove", (e) => {
+                xDot(e.clientX); yDot(e.clientY);
+                xRing(e.clientX); yRing(e.clientY);
+            });
+
+            // Cursor States
+            const interactables = document.querySelectorAll('a, button');
+            interactables.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    gsap.to(cursorDot, { scale: 0, duration: 0.3 });
+                    gsap.to(cursorRing, { scale: 1.8, borderColor: 'var(--brass)', duration: 0.3 });
+                    if (el.classList.contains('document-cta')) {
+                        gsap.to(cursorRing, { scale: 4, borderColor: 'var(--crimson)', duration: 0.3 });
+                        gsap.to(ringDenied, { opacity: 1, duration: 0.2 });
+                    }
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(cursorDot, { scale: 1, duration: 0.3 });
+                    gsap.to(cursorRing, { scale: 1, borderColor: 'rgba(154,123,79,0.4)', backgroundColor: 'transparent', duration: 0.3 });
+                    gsap.to(ringDenied, { opacity: 0, duration: 0.2 });
+                });
+            });
+
+            const docCards = document.querySelectorAll('.doc-card');
+            docCards.forEach(card => {
+                // Pointer interactions for the cursor
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(cursorRing, { scale: 3, backgroundColor: 'rgba(154,123,79,0.08)', borderColor: 'rgba(154,123,79,0.4)', duration: 0.3 });
+                    gsap.to(cursorDot, { scale: 0, duration: 0.3 });
+                    ringText.innerText = 'VIEW →';
+                    gsap.to(ringText, { opacity: 1, duration: 0.2 });
+                });
+
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                    gsap.to(card, {
+                        rotateY: x * 15,
+                        rotateX: -y * 15,
+                        scale: 1.05,
+                        z: 50,
+                        duration: 0.4,
+                        ease: "power2.out",
+                        transformOrigin: "center center"
+                    });
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(cursorRing, { scale: 1, backgroundColor: 'transparent', duration: 0.3 });
+                    gsap.to(cursorDot, { scale: 1, duration: 0.3 });
+                    gsap.to(ringText, { opacity: 0, duration: 0.2 });
+                    gsap.to(card, {
+                        rotateY: 0,
+                        rotateX: 0,
+                        scale: 1,
+                        z: 0,
+                        duration: 0.8,
+                        ease: "elastic.out(1, 0.5)"
+                    });
+                });
+            });
+
+            const heroLetter = document.querySelector('.js-hover-letter');
+            if (heroLetter) {
+                heroLetter.addEventListener('mouseenter', () => {
+                    gsap.to(cursorDot, { scale: 0, duration: 0.3 });
+                    gsap.to(cursorRing, { scale: 4, borderColor: 'var(--crimson)', duration: 0.3 });
+                    ringDenied.innerText = 'DENIED';
+                    gsap.to(ringDenied, { opacity: 1, duration: 0.2 });
+                });
+                heroLetter.addEventListener('mouseleave', () => {
+                    gsap.to(cursorDot, { scale: 1, duration: 0.3 });
+                    gsap.to(cursorRing, { scale: 1, borderColor: 'rgba(154,123,79,0.4)', duration: 0.3 });
+                    gsap.to(ringDenied, { opacity: 0, duration: 0.2 });
+                });
+            }
+        }
+
+        // Navbar Scroll Effect
+        const navbar = document.querySelector('.navbar');
+        ScrollTrigger.create({
+            start: 'top -60',
+            end: 99999,
+            toggleClass: { className: 'nav-scrolled', targets: '.navbar' }
+        });
+
+        // Mobile Menu
+        const hamburger = document.querySelector('.hamburger');
+        const mobileMenu = document.querySelector('.mobile-overlay');
+        if (hamburger && mobileMenu) {
+            let menuOpen = false;
+            hamburger.addEventListener('click', () => {
+                menuOpen = !menuOpen;
+                if (menuOpen) {
+                    gsap.to('.hamburger .line:nth-child(1)', { y: 7, rotation: 45, duration: 0.3 });
+                    gsap.to('.hamburger .line:nth-child(2)', { opacity: 0, duration: 0.2 });
+                    gsap.to('.hamburger .line:nth-child(3)', { y: -7, rotation: -45, duration: 0.3 });
+                    mobileMenu.classList.add('active');
+                    gsap.to('.mobile-overlay .nav-link', { y: 0, opacity: 1, stagger: 0.1, delay: 0.2 });
+                    if (lenis) lenis.stop();
+                } else {
+                    gsap.to('.hamburger .line:nth-child(1)', { y: 0, rotation: 0, duration: 0.3 });
+                    gsap.to('.hamburger .line:nth-child(2)', { opacity: 1, duration: 0.3, delay: 0.2 });
+                    gsap.to('.hamburger .line:nth-child(3)', { y: 0, rotation: 0, duration: 0.3 });
+                    gsap.to('.mobile-overlay .nav-link', { y: 20, opacity: 0, stagger: -0.1, duration: 0.2 });
+                    setTimeout(() => mobileMenu.classList.remove('active'), 400);
+                    if (lenis) lenis.start();
+                }
+            });
+        }
+
+        // Hero Animations
+        window.addEventListener('load', () => {
+            if (prefersReducedMotion) {
+                gsap.set('.hero-label-text, .hero-cta, .hero-cta-secondary, .hero-privacy', { opacity: 1 });
+                gsap.set('.denied-stamp', { opacity: 1, scale: 1 });
+                return;
+            }
+
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+            // Nav reveal
+            tl.fromTo('.nav-left', { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 1 }, 0.2);
+
+            // Label reveal
+            tl.to('.hero-label-line', { width: 40, duration: 0.8 }, 0);
+            tl.to('.hero-label-text', { opacity: 1, duration: 0.8 }, 0.8);
+
+            // Headline SplitType
+            const heroLines = new SplitType('.hero-headline .line', { types: 'chars' });
+            tl.from(heroLines.chars, {
+                y: 80, opacity: 0, rotateX: -90, transformOrigin: "0% 50% -50",
+                stagger: 0.02, duration: 0.8, ease: "back.out(1.7)"
+            }, 0.3);
+
+            // Subheadline SplitType
+            const subLines = new SplitType('.hero-subheadline', { types: 'lines' });
+            tl.from(subLines.lines, { y: 20, opacity: 0, duration: 0.8, stagger: 0.1 }, 1.4);
+
+            // CTA & Privacy
+            tl.to('.hero-cta, .hero-cta-secondary', { opacity: 1, duration: 0.8 }, 1.8);
+            tl.to('.hero-privacy', { opacity: 1, duration: 0.8 }, 2.0);
+
+            // Stamp Reveal
+            tl.fromTo('.denied-stamp',
+                { scale: 2, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.12, ease: "power4.out" }, 2.2
+            );
+            tl.to('.denied-stamp', { boxShadow: "0 0 0 1px rgba(139,26,26,0.2), 0 0 40px rgba(139,26,26,0.5)", duration: 0.3, yoyo: true, repeat: 1 }, 2.32);
+        });
+
+        // Magnetic Button Effect
+        if (!prefersReducedMotion && window.innerWidth > 768) {
+            const magneticButtons = document.querySelectorAll('.magnetic');
+            magneticButtons.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+
+                    gsap.to(btn, {
+                        x: x * 0.4, y: y * 0.4,
+                        duration: 0.6, ease: "power3.out"
+                    });
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, {
+                        x: 0, y: 0,
+                        duration: 0.8, ease: "elastic.out(1, 0.4)"
+                    });
+                });
+            });
+        }
+
+        // Hero Letter 3D Tilt & Parallax
+        if (!prefersReducedMotion && window.innerWidth > 768) {
+            const heroRight = document.querySelector('.hero-right');
+            const letterWrapper = document.querySelector('.letter-wrapper');
+
+            heroRight.addEventListener('mousemove', (e) => {
+                const rect = heroRight.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                gsap.to(letterWrapper, {
+                    rotateY: x * 16, rotateX: -y * 16,
+                    duration: 0.6, ease: "power2.out", transformOrigin: "center center"
+                });
+            });
+
+            heroRight.addEventListener('mouseleave', () => {
+                gsap.to(letterWrapper, {
+                    rotateY: 0, rotateX: 0,
+                    duration: 1.2, ease: "elastic.out(1, 0.5)"
+                });
+            });
+
+            gsap.to(letterWrapper, {
+                yPercent: -20,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "body", start: "top top", end: "bottom top", scrub: true
+                }
+            });
+        }
+
+        // Hero Letter Crack & Shatter on CTA interaction
+        if (!prefersReducedMotion) {
+            const heroCta = document.querySelector('.hero-cta');
+            const crack = document.querySelector('.letter-crack');
+            const letterWrapper = document.querySelector('.letter-wrapper');
+
+            heroCta.addEventListener('mouseenter', () => {
+                gsap.to(crack, { opacity: 0.5, duration: 0.5 });
+            });
+            heroCta.addEventListener('mouseleave', () => {
+                gsap.to(crack, { opacity: 0 });
+            });
+            /* Shatter effect left to user implementation constraints - simplified for basic requirements */
+        }
+
+        // Scroll Indicator Yoyo
+        if (!prefersReducedMotion) {
+            gsap.to('.scroll-indicator', {
+                y: 10, duration: 1.2, ease: "power1.inOut", yoyo: true, repeat: -1
+            });
+
+            ScrollTrigger.create({
+                trigger: "body",
+                start: "top -10",
+                onUpdate: () => gsap.to('.scroll-indicator', { opacity: 0, duration: 0.3 })
+            });
+        }
+
+        // Horizontal Stats Pin
+        if (!prefersReducedMotion && window.innerWidth > 768) {
+            const statsContainer = document.querySelector('.stats');
+            const statsStrip = document.querySelector('.stats-strip');
+
+            gsap.to(statsStrip, {
+                x: () => -(statsStrip.scrollWidth - window.innerWidth),
+                ease: "none",
+                scrollTrigger: {
+                    trigger: statsContainer,
+                    pin: true, scrub: 1, end: () => "+=" + statsStrip.scrollWidth
+                }
+            });
+
+            const updateCounter = (element, endValue) => {
+                gsap.to(element, {
+                    innerHTML: endValue,
+                    duration: 2,
+                    snap: { innerHTML: 1 },
+                    scrollTrigger: {
+                        trigger: element.closest('.stat-panel'), containerAnimation: (gsap.getTweensOf(statsStrip)[0] || null), start: "left center", toggleActions: "play none none reverse"
+                    }
+                });
+            };
+
+            const statPanels = document.querySelectorAll('.stat-panel');
+            statPanels.forEach((panel, i) => {
+                const content = panel.querySelector('.stat-content');
+                const divider = panel.querySelector('.stat-divider');
+                const numbers = [7, 80, 80, 200];
+
+                gsap.to(content, {
+                    opacity: 1, duration: 0.5,
+                    scrollTrigger: {
+                        trigger: panel, containerAnimation: (gsap.getTweensOf(statsStrip)[0] || null), start: "left 75%", toggleActions: "play none none reverse"
+                    }
+                });
+
+                gsap.to(divider, {
+                    height: 60, duration: 0.8, ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: panel, containerAnimation: (gsap.getTweensOf(statsStrip)[0] || null), start: "left 75%", toggleActions: "play none none reverse"
+                    }
+                });
+
+                updateCounter(panel.querySelector('.stat-number'), numbers[i]);
+            });
+        } else if (window.innerWidth <= 768) {
+            // Mobile fallback for stats
+            const statPanels = document.querySelectorAll('.stat-panel');
+            statPanels.forEach((panel, i) => {
+                const content = panel.querySelector('.stat-content');
+                gsap.to(content, {
+                    opacity: 1, duration: 0.8,
+                    scrollTrigger: { trigger: panel, start: "top 80%" }
+                });
+                const num = panel.querySelector('.stat-number');
+                num.innerHTML = [7, 80, 80, "200M"][i]; // Simple static assignment for mobile
+            });
+        }
+
+        // How It Works
+        if (!prefersReducedMotion) {
+            gsap.to('.how .section-label', {
+                clipPath: "inset(0 0% 0 0)", duration: 0.8,
+                scrollTrigger: { trigger: ".how", start: "top 80%" }
+            });
+
+            if (window.innerWidth > 768) {
+                gsap.to('.how-dot', {
+                    x: () => document.querySelector('.how-connector').offsetWidth,
+                    ease: "none",
+                    scrollTrigger: { trigger: ".how", start: "top center", end: "bottom center", scrub: 1 }
+                });
+            }
+
+            const howCards = document.querySelectorAll('.how-card');
+            howCards.forEach((card, i) => {
+                gsap.to(card, {
+                    y: 0, opacity: 1, duration: 0.8, ease: "power2.out", delay: i * 0.2,
+                    scrollTrigger: { trigger: ".how", start: "top 60%" }
+                });
+
+                const svgPaths = card.querySelectorAll('svg path, svg rect, svg circle, svg line');
+                gsap.to(svgPaths, {
+                    strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut",
+                    scrollTrigger: { trigger: card, start: "top 75%" }
+                });
+            });
+        } else {
+            gsap.set('.how-card, .how .section-label', { opacity: 1, y: 0, clipPath: "inset(0 0% 0 0)" });
+            gsap.set('.how-icon svg path, .how-icon svg rect, .how-icon svg circle, .how-icon svg line', { strokeDashoffset: 0 });
+        }
+
+        // Document Types
+        if (!prefersReducedMotion) {
+            const docTitleChars = new SplitType('.docs-title', { types: 'chars' });
+            gsap.from(docTitleChars.chars, {
+                opacity: 0, y: 20, duration: 0.5, stagger: 0.03,
+                scrollTrigger: { trigger: ".docs-header", start: "top 80%" }
+            });
+
+            const docCards = document.querySelectorAll('.doc-card');
+            docCards.forEach((card, i) => {
+                const row = Math.floor(i / 3);
+                gsap.from(card, {
+                    y: 50, opacity: 0, duration: 0.8, ease: "power2.out", delay: (i % 3) * 0.1 + row * 0.2,
+                    scrollTrigger: { trigger: ".docs-grid", start: "top 75%" }
+                });
+            });
+        } else {
+            gsap.set('.docs-title, .doc-card', { opacity: 1, y: 0 });
+        }
+
+        // Privacy Pin
+        if (!prefersReducedMotion) {
+            const pContainer = document.querySelector('.privacy');
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: pContainer, start: "top top", end: "bottom bottom", scrub: 1
+                }
+            });
+
+            const promises = document.querySelectorAll('.privacy-line');
+            promises.forEach((p, i) => {
+                tl.to(p, { opacity: 1, y: 0, duration: 1 }, i * 2);
+                if (i > 0) tl.to(promises[i - 1], { opacity: 0.3, duration: 0.5 }, i * 2);
+            });
+            tl.to(promises, { color: "var(--brass)", duration: 1, textShadow: "0 0 20px rgba(154,123,79,0.5)" }, "+=1");
+            tl.to('.privacy-desc', { opacity: 1, duration: 1 }, "-=0.5");
+        } else {
+            gsap.set('.privacy, .privacy-inner', { height: 'auto', position: 'relative' });
+            gsap.set('.privacy-line, .privacy-desc', { opacity: 1, y: 0, position: 'relative' });
+        }
+
+        // Marquee
+        if (!prefersReducedMotion) {
+            const marqueeInner = document.querySelector('.marquee-inner');
+            const marqueeTl = gsap.to(marqueeInner, {
+                xPercent: -33.33, duration: 30, ease: "none", repeat: -1
+            });
+
+            document.querySelector('.marquee').addEventListener('mouseenter', () => marqueeTl.timeScale(0.33));
+            document.querySelector('.marquee').addEventListener('mouseleave', () => marqueeTl.timeScale(1));
+
+            if (lenis) {
+                lenis.on('scroll', ({ velocity }) => {
+                    gsap.to(marqueeTl, { timeScale: velocity > 0 ? 1 : -1, duration: 0.5 });
+                });
+            }
+        }
+
+        // Mission Strip
+        if (!prefersReducedMotion) {
+            gsap.to('.mission-line', {
+                clipPath: "inset(0 0% 0 0)", duration: 1, stagger: 0.15, ease: "power2.out",
+                scrollTrigger: { trigger: ".mission", start: "top 60%" }
+            });
+        } else {
+            gsap.set('.mission-text', { clipPath: "inset(0 0% 0 0)" });
+        }
+
+        // Final CTA
+        if (!prefersReducedMotion) {
+            const finalChars = new SplitType('.final-title', { types: 'chars' });
+            gsap.from(finalChars.chars, {
+                y: 60, opacity: 0, rotateX: -90, transformOrigin: "0% 50% -50",
+                stagger: 0.02, duration: 0.8, ease: "back.out(1.7)",
+                scrollTrigger: { trigger: ".final", start: "top 80%" }
+            });
+
+            gsap.to('.final-sub', {
+                y: 0, opacity: 1, duration: 0.8, delay: 0.4,
+                scrollTrigger: { trigger: ".final", start: "top 80%" }
+            });
+        } else {
+            gsap.set('.final-title .char, .final-sub', { opacity: 1, y: 0, rotateX: 0 });
+        }
+
+        window.addEventListener('load', () => {
+            document.body.classList.add('custom-cursor');
+            ScrollTrigger.refresh();
+        });
+
+    </script>
+</body>
+
+</html>

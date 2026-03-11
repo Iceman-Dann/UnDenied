@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UnDenied — Document Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../assets/images/favicon_64.png">
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0f1520;
+      --surface-deep: #0d1018;
+      --border: #1e2a3d;
+      --text: #ede8dc;
+      --text-secondary: #8a9bb0;
+      --brass: #9a7b4f;
+      --brass-hover: #b8956a;
+      --highlight: #1e3a5f;
+      --cta: #1a3a6b;
+      --amber-muted: #7a6230;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+    }
+
+    /* ── Grain ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--brass); }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--brass), var(--brass-hover));
+      z-index: 9998; pointer-events: none;
+      transform-origin: left;
+      transition: width 0.1s linear;
+    }
+
+    /* ── Custom cursor ── */
+    #cursor-dot {
+      width: 7px; height: 7px;
+      background: var(--brass);
+      border-radius: 50% !important;
+      position: fixed; pointer-events: none;
+      z-index: 10001; top: 0; left: 0;
+      will-change: transform;
+    }
+    #cursor-ring {
+      width: 38px; height: 38px;
+      border: 1.5px solid rgba(154, 123, 79, 0.35);
+      border-radius: 50% !important;
+      position: fixed; pointer-events: none;
+      z-index: 10000; top: 0; left: 0;
+      will-change: transform;
+      transition: width 0.35s cubic-bezier(0.25,1,0.5,1),
+                  height 0.35s cubic-bezier(0.25,1,0.5,1),
+                  border-color 0.35s ease,
+                  background 0.35s ease;
+    }
+    #cursor-ring.hovering {
+      width: 52px; height: 52px;
+      border-color: rgba(154, 123, 79, 0.7);
+      background: rgba(154, 123, 79, 0.06);
+    }
+    #cursor-ring.clicking {
+      width: 24px; height: 24px;
+      border-color: var(--brass);
+      background: rgba(154, 123, 79, 0.15);
+    }
+
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .caps {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--brass);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(8,12,20,0.88);
+      backdrop-filter: blur(24px) saturate(1.8);
+      border-bottom: 1px solid rgba(154, 123, 79, 0.18);
+      transition: border-color 0.4s ease;
+    }
+    .nav-inner {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 48px; height: 68px;
+      max-width: 1400px; margin: 0 auto;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 400;
+      color: var(--text); text-decoration: none;
+      letter-spacing: 0.04em;
+      overflow: hidden; display: block;
+    }
+    .nav-logo-inner { display: block; }
+    .nav-logo span { color: var(--brass); }
+    .nav-right { display: flex; align-items: center; gap: 36px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-secondary); text-decoration: none;
+      transition: color 0.2s ease; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: -3px; left: 0; width: 100%; height: 1px;
+      background: var(--brass);
+      transform: scaleX(0); transform-origin: right;
+      transition: transform 0.3s cubic-bezier(0.25,1,0.5,1);
+    }
+    .nav-links a:hover { color: var(--brass); }
+    .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    .nav-badge {
+      display: none; align-items: center; gap: 8px;
+      padding: 7px 14px;
+      border: 1px solid rgba(154,123,79,0.3);
+      background: rgba(154,123,79,0.06);
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-secondary);
+      animation: badgeFadeIn 0.4s ease forwards;
+    }
+    @keyframes badgeFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .nav-badge.visible { display: flex; }
+    .nav-badge-dot {
+      width: 5px; height: 5px;
+      background: var(--brass);
+      border-radius: 50% !important;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+    .nav-badge-type { color: var(--brass); }
+
+    /* ── STAT BAR ── */
+    .stat-bar {
+      grid-column: 1 / -1;
+      display: flex; flex-direction: column;
+      align-items: center;
+      padding: 0 0 64px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+      opacity: 0; transform: translateY(20px);
+    }
+    .stat-bar.visible {
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.25,1,0.5,1);
+    }
+    .stats-row {
+      display: flex; align-items: center;
+      justify-content: center;
+      gap: 64px; margin-bottom: 20px;
+    }
+    .stat-item { text-align: center; }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 54px; font-weight: 300;
+      color: var(--brass); line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 11px; font-variant: small-caps;
+      letter-spacing: 0.15em; color: var(--text-secondary);
+    }
+    .stat-source {
+      font-size: 8px; color: var(--text-secondary); opacity: 0.5;
+      margin-top: 4px; letter-spacing: 0.05em;
+    }
+    .stat-divider {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, transparent, rgba(154,123,79,0.3) 50%, transparent);
+    }
+    .stat-footer {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 15px; color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .analyzer-wrap {
+      max-width: 1400px; margin: 0 auto;
+      padding: 56px 48px 100px;
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 0;
+      min-height: calc(100vh - 68px);
+    }
+
+    /* ── LEFT COLUMN ── */
+    .left-col {
+      padding-right: 56px;
+      border-right: 1px solid var(--border);
+      opacity: 0; transform: translateX(-24px);
+    }
+    .left-col.visible {
+      opacity: 1; transform: translateX(0);
+      transition: opacity 0.9s cubic-bezier(0.25,1,0.5,1),
+                  transform 0.9s cubic-bezier(0.25,1,0.5,1);
+    }
+    .left-header { margin-bottom: 48px; }
+    .left-eyebrow {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .left-eyebrow::before {
+      content: ''; display: block;
+      width: 20px; height: 1px; background: var(--brass);
+    }
+    .left-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 300;
+      line-height: 1.15; color: var(--text);
+      margin-bottom: 12px;
+    }
+    .left-sub { font-size: 13px; color: var(--text-secondary); }
+
+    .step-label {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-secondary); margin-bottom: 14px;
+      display: block;
+    }
+    .step-label span { color: var(--brass); }
+    .form-block { margin-bottom: 36px; }
+
+    /* ── DROPDOWN — in-flow, never overlaps ── */
+    .custom-select {
+      position: relative;
+      user-select: none;
+    }
+
+    .select-trigger {
+      display: flex; align-items: center; gap: 12px;
+      padding: 15px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .select-trigger:hover { border-color: rgba(154,123,79,0.5); }
+    .select-trigger.open {
+      border-color: var(--brass);
+      box-shadow: 0 0 0 1px rgba(154,123,79,0.2);
+    }
+    .select-trigger.flash { animation: borderFlash 0.5s ease; }
+    @keyframes borderFlash {
+      0%, 100% { border-color: var(--border); }
+      50% { border-color: var(--brass); box-shadow: 0 0 0 2px rgba(154,123,79,0.2); }
+    }
+    .select-icon { flex-shrink: 0; width: 20px; height: 20px; }
+    .select-text { flex: 1; font-size: 14px; color: var(--text); }
+    .select-text.placeholder { color: var(--text-secondary); }
+    .select-chevron {
+      flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.25,1,0.5,1);
+    }
+    .select-trigger.open .select-chevron { transform: rotate(180deg); }
+
+    /* Dropdown renders IN FLOW — pushes content down, never overlaps */
+    .select-dropdown {
+      background: var(--surface);
+      border: 1px solid var(--brass);
+      border-top: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.28s cubic-bezier(0.25,1,0.5,1),
+                  border-color 0.25s ease;
+    }
+    .select-dropdown.open {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .select-dropdown::-webkit-scrollbar { width: 3px; }
+    .select-dropdown::-webkit-scrollbar-track { background: transparent; }
+    .select-dropdown::-webkit-scrollbar-thumb { background: var(--brass); }
+
+    .select-option {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      position: relative;
+    }
+    .select-option:not(:last-child)::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 16px; right: 16px;
+      height: 1px; background: var(--border);
+    }
+    .select-option:hover { background: rgba(30,42,61,0.7); border-left-color: var(--brass); }
+    .select-option.selected { background: rgba(30,58,95,0.25); border-left-color: var(--brass); }
+    .select-option-icon { flex-shrink: 0; width: 20px; height: 20px; }
+    .select-option-text { font-size: 13px; color: var(--text); }
+
+    /* ── TEXTAREA ── */
+    .textarea-wrap { position: relative; }
+    textarea {
+      width: 100%; min-height: 240px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 300;
+      line-height: 1.75; padding: 18px;
+      resize: none; outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden; cursor: text;
+    }
+    textarea::placeholder { color: var(--text-secondary); }
+    textarea:focus {
+      border-color: rgba(154, 123, 79, 0.6);
+      box-shadow: 0 0 0 1px rgba(154,123,79,0.25),
+                  inset 0 0 40px rgba(154,123,79,0.02);
+    }
+    .char-count {
+      text-align: right; font-size: 11px;
+      color: var(--text-secondary); margin-top: 6px;
+      letter-spacing: 0.05em; font-variant-numeric: tabular-nums;
+    }
+    .example-btn {
+      background: none; border: none;
+      color: var(--brass);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 400;
+      cursor: pointer; padding: 8px 0;
+      display: inline-flex; align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease, gap 0.2s ease;
+      margin-top: 4px;
+    }
+    .example-btn:hover { color: var(--brass-hover); gap: 10px; }
+
+    .or-divider {
+      display: flex; align-items: center;
+      gap: 16px; margin: 22px 0;
+    }
+    .or-divider::before, .or-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .or-divider span {
+      font-size: 11px; color: var(--text-secondary); letter-spacing: 0.1em;
+    }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 1px dashed rgba(154,123,79,0.3);
+      padding: 32px; text-align: center; cursor: pointer;
+      transition: border-color 0.25s ease,
+                  background 0.25s ease,
+                  box-shadow 0.25s ease;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--brass);
+      border-style: solid;
+      background: rgba(154, 123, 79, 0.03);
+      box-shadow: inset 0 0 40px rgba(154,123,79,0.03);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+    }
+    .upload-icon { margin: 0 auto 12px; display: block; }
+    .upload-text { font-size: 13px; color: var(--text-secondary); }
+    .upload-filename {
+      font-size: 12px; color: var(--brass);
+      margin-top: 8px; display: none;
+    }
+    .upload-filename.visible { display: block; }
+
+    /* ── ANALYZE BUTTON ── */
+    .analyze-btn {
+      width: 100%; padding: 17px;
+      background: var(--cta);
+      border: 1px solid rgba(154,123,79,0.5);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: pointer;
+      display: flex; align-items: center;
+      justify-content: center; gap: 10px;
+      position: relative; overflow: hidden;
+      transition: background 0.25s ease,
+                  border-color 0.25s ease,
+                  box-shadow 0.3s ease;
+    }
+    .analyze-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.6s cubic-bezier(0.25,1,0.5,1);
+    }
+    .analyze-btn:hover:not(:disabled) {
+      background: #1f4787;
+      border-color: var(--brass-hover);
+      box-shadow: 0 6px 32px rgba(26,58,107,0.4);
+    }
+    .analyze-btn:hover:not(:disabled)::before { transform: translateX(100%); }
+    .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Loading dots */
+    .loading-dots { display: none; gap: 5px; align-items: center; }
+    .loading-dots.active { display: flex; }
+    .loading-dots span {
+      width: 4px; height: 4px;
+      background: var(--text); display: block;
+      border-radius: 50% !important;
+      animation: dotPulse 1.3s ease infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%, 60%, 100% { opacity: 0.2; transform: scale(0.7); }
+      30% { opacity: 1; transform: scale(1); }
+    }
+
+    .privacy-note {
+      display: flex; align-items: flex-start;
+      gap: 8px; margin-top: 14px;
+      font-size: 12px; color: var(--text-secondary);
+      line-height: 1.6; opacity: 0.75;
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .right-col {
+      padding-left: 56px; position: relative;
+      display: flex; flex-direction: column;
+      opacity: 0; transform: translateX(24px);
+    }
+    .right-col.visible {
+      opacity: 1; transform: translateX(0);
+      transition: opacity 0.9s cubic-bezier(0.25,1,0.5,1) 0.15s,
+                  transform 0.9s cubic-bezier(0.25,1,0.5,1) 0.15s;
+    }
+
+    /* Placeholder */
+    .placeholder-state {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      transition: opacity 0.4s ease;
+    }
+    .placeholder-state.hidden {
+      opacity: 0; pointer-events: none; display: none;
+    }
+    .placeholder-doc { opacity: 0.06; margin-bottom: 28px; }
+    .placeholder-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 22px;
+      font-weight: 300; color: var(--text-secondary);
+    }
+
+    /* ── SCANNER ── */
+    .scanner-wrap {
+      display: none; flex-direction: column;
+      align-items: stretch; justify-content: center;
+      height: 100%; position: relative;
+      overflow: hidden; min-height: 300px;
+    }
+    .scanner-wrap.active { display: flex; }
+    .scanner-label {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-secondary); text-align: center;
+      margin-bottom: 36px;
+    }
+    .scanner-track {
+      position: relative; height: 2px;
+      background: var(--border); overflow: visible;
+    }
+    .scanner-line {
+      position: absolute; top: -1px; left: -4px;
+      width: 100px; height: 4px;
+      background: linear-gradient(to right, transparent, var(--brass), transparent);
+      animation: scanSweep 1.8s cubic-bezier(0.4,0,0.6,1) infinite;
+    }
+    @keyframes scanSweep {
+      0% { left: -100px; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { left: calc(100% + 100px); opacity: 0; }
+    }
+    .scanner-doc-preview { margin-top: 44px; opacity: 0.07; text-align: center; }
+
+    /* ── RESULTS ── */
+    .results-wrap { display: none; flex-direction: column; gap: 0; }
+    .results-wrap.active { display: flex; }
+
+    .expert-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--brass);
+      background: rgba(154, 123, 79, 0.08);
+      padding: 5px 11px;
+      border: 1px solid rgba(154, 123, 79, 0.25);
+    }
+    .expert-intro {
+      font-size: 14px; color: var(--text-secondary);
+      margin-bottom: 20px; line-height: 1.65;
+    }
+    .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .context-item {
+      padding: 13px;
+      background: rgba(255,255,255,0.015);
+      border: 1px solid var(--border);
+      transition: border-color 0.2s ease;
+    }
+    .context-item:hover { border-color: rgba(154,123,79,0.3); }
+    .context-key {
+      font-size: 9px; text-transform: uppercase;
+      letter-spacing: 0.14em; color: var(--brass);
+      margin-bottom: 5px;
+    }
+    .context-val { font-size: 12px; color: var(--text); font-weight: 400; }
+
+    /* Result panel */
+    .result-panel {
+      border-left: 2px solid var(--brass);
+      background: linear-gradient(to right, rgba(154,123,79,0.02), transparent);
+      margin-bottom: 24px;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.55s cubic-bezier(0.25,1,0.5,1),
+                  transform 0.55s cubic-bezier(0.25,1,0.5,1);
+    }
+    .result-panel.visible { opacity: 1; transform: translateY(0); }
+    .panel-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 20px 22px 16px;
+      border-top: 1px solid rgba(154,123,79,0.6);
+    }
+    .panel-label {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--brass);
+    }
+    .panel-actions { display: flex; align-items: center; gap: 12px; }
+    .copy-btn {
+      background: none; border: none; cursor: pointer;
+      padding: 5px; color: var(--text-secondary);
+      transition: color 0.2s ease, transform 0.2s ease;
+      display: flex; align-items: center;
+    }
+    .copy-btn:hover { color: var(--brass); transform: scale(1.1); }
+    .copy-btn.copied { color: var(--brass); }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--surface); border: 1px solid var(--brass);
+      color: var(--text); padding: 12px 24px;
+      font-size: 13px; letter-spacing: 0.05em;
+      opacity: 0; pointer-events: none;
+      z-index: 10002;
+      transition: transform 0.35s cubic-bezier(0.25,1,0.5,1), opacity 0.35s ease;
+    }
+    .toast.visible {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+    }
+
+    /* Dynamic result badges */
+    .result-badges {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .result-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid;
+    }
+    .result-badge.violations {
+      color: #c9a855;
+      border-color: rgba(201,168,85,0.4);
+      background: rgba(201,168,85,0.08);
+    }
+    .result-badge.deadline {
+      color: #7eb8c9;
+      border-color: rgba(126,184,201,0.4);
+      background: rgba(126,184,201,0.08);
+    }
+    .result-badge.urgent {
+      color: #c97b7b;
+      border-color: rgba(201,123,123,0.4);
+      background: rgba(201,123,123,0.08);
+      animation: urgentPulse 2s ease-in-out infinite;
+    }
+    @keyframes urgentPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .collapse-toggle {
+      display: none; background: none; border: none;
+      cursor: pointer; color: var(--text-secondary);
+      padding: 4px; transition: color 0.2s ease;
+    }
+    .collapse-toggle:hover { color: var(--brass); }
+    .panel-body {
+      padding: 0 22px 26px;
+      overflow-y: auto; max-height: 420px;
+    }
+    .panel-body::-webkit-scrollbar { width: 3px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--brass); }
+    .panel-body.collapsed { display: none; }
+    .panel-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px; font-weight: 400;
+      line-height: 1.78; color: var(--text);
+    }
+    .panel-divider { height: 1px; background: var(--border); margin: 0 22px; }
+
+    /* Flag items */
+    .flag-list { display: flex; flex-direction: column; }
+    .flag-item {
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(30,42,61,0.7);
+      display: flex; gap: 14px; align-items: flex-start;
+      transition: background 0.2s ease;
+    }
+    .flag-item:last-child { border-bottom: none; }
+    .flag-icon { flex-shrink: 0; margin-top: 2px; }
+    .flag-content { flex: 1; }
+    .flag-title { font-size: 14px; font-weight: 400; color: var(--text); margin-bottom: 5px; }
+    .flag-detail { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* Appeal panel */
+    .panel-appeal {
+      background: var(--surface-deep);
+      border: 1px solid rgba(154,123,79,0.5);
+      border-left: 2px solid var(--brass);
+      box-shadow: 0 0 40px rgba(154,123,79,0.05);
+    }
+    .panel-appeal .panel-header {
+      border-top: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .letter-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-weight: 400;
+      line-height: 1.9; color: var(--text);
+      white-space: pre-wrap;
+    }
+    .letter-actions {
+      display: flex; gap: 12px;
+      padding: 20px 22px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-outline {
+      flex: 1; padding: 14px;
+      background: transparent;
+      border: 1px solid rgba(154,123,79,0.45);
+      color: var(--brass);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer;
+      display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-outline:hover {
+      background: rgba(154, 123, 79, 0.08);
+      color: var(--brass-hover);
+      border-color: var(--brass-hover);
+    }
+    .btn-filled {
+      flex: 1; padding: 14px;
+      background: var(--cta);
+      border: 1px solid rgba(154,123,79,0.5);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer;
+      display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease;
+    }
+    .btn-filled:hover {
+      background: #1f4787;
+      border-color: var(--brass-hover);
+      box-shadow: 0 4px 20px rgba(26,58,107,0.4);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .analyzer-wrap {
+        grid-template-columns: 1fr;
+        padding: 32px 24px 80px;
+        gap: 48px;
+      }
+      .left-col {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 48px;
+      }
+      .right-col { padding-left: 0; }
+      .letter-actions { flex-direction: column; }
+      .collapse-toggle { display: flex; }
+      .panel-body { max-height: none; }
+      .stats-row { gap: 32px; flex-wrap: wrap; }
+      .stat-number { font-size: 42px; }
+      .stat-divider { display: none; }
+      .stat-source { font-size: 7px; }
+    }
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 24px; }
+      .nav-links { display: none; }
+      .left-title { font-size: 28px; }
+      .stats-row { gap: 24px; }
+      .stat-item { min-width: 100px; }
+      textarea { min-height: 180px; font-size: 13px; }
+      .upload-zone { padding: 24px; }
+      .panel-header { padding: 16px 18px; }
+      .panel-body { padding: 0 18px 22px; }
+      .letter-body { font-size: 15px; }
+      .btn-outline, .btn-filled { padding: 12px; font-size: 10px; }
+    }
+    @media (max-width: 480px) {
+      .analyzer-wrap { padding: 24px 16px 60px; }
+      .left-title { font-size: 24px; }
+      .stat-bar { padding-bottom: 40px; margin-bottom: 40px; }
+      .stat-number { font-size: 36px; }
+      .stat-label { font-size: 10px; }
+      .form-block { margin-bottom: 28px; }
+      .select-trigger { padding: 12px 14px; }
+      .select-option { padding: 12px 14px; }
+      textarea { min-height: 150px; padding: 14px; }
+      .example-btn { font-size: 12px; }
+      .analyze-btn { padding: 14px; }
+      .privacy-note { font-size: 11px; }
+      .placeholder-doc { width: 140px; height: 180px; }
+      .result-badge { font-size: 9px; padding: 5px 10px; }
+      .panel-label { font-size: 11px; }
+      .panel-text { font-size: 17px; }
+      .flag-item { padding: 14px 0; }
+      .flag-title { font-size: 13px; }
+      .flag-detail { font-size: 12px; }
+      .letter-actions { gap: 10px; }
+      .btn-outline, .btn-filled { padding: 11px; font-size: 9px; letter-spacing: 0.1em; }
+      .toast { font-size: 12px; padding: 10px 20px; }
+    }
+    /* Hide custom cursor on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      #cursor-dot, #cursor-ring { display: none; }
+      body { cursor: auto; }
+      button, a, .select-trigger, .select-option, .upload-zone { cursor: pointer; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="progress-bar"></div>
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-inner">Un<span>Denied</span></span>
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="stories.html">Success Stories</a></li>
+          <li><a href="knowrights.html">Know Your Rights</a></li>
+          <li><a href="TheDenialMachine.html">The Denial Machine</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="index.html">← Home</a></li>
+        </ul>
+        <div class="nav-badge" id="navBadge">
+          <div class="nav-badge-dot"></div>
+          <span>Analyzing:</span>
+          <span class="nav-badge-type" id="navBadgeType">—</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="analyzer-wrap">
+
+    <!-- STAT BAR -->
+    <div class="stat-bar" id="statBar">
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-number">80%</div>
+          <div class="stat-label">of appeals win</div>
+          <div class="stat-source">Source: AMA, 2019</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number">200M+</div>
+          <div class="stat-label">wrongful letters yearly</div>
+          <div class="stat-source">Source: CFPB, 2022</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-number">80%</div>
+          <div class="stat-label">never fight back</div>
+          <div class="stat-source">Source: NAIC, 2020</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col" id="leftCol">
+      <div class="left-header">
+        <span class="caps left-eyebrow">Document Analyzer</span>
+        <h1 class="left-title serif">Paste your letter.<br>Get your power back.</h1>
+        <p class="left-sub">Everything disappears when you close this tab.</p>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="form-block">
+        <span class="step-label"><span>01</span> — Select Document Type</span>
+        <div class="custom-select" id="customSelect">
+          <div class="select-trigger" id="selectTrigger" tabindex="0">
+            <svg class="select-icon" id="triggerIcon" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="2" width="14" height="16" stroke="#8a9bb0" stroke-width="1.5"/>
+              <line x1="6" y1="7" x2="14" y2="7" stroke="#8a9bb0" stroke-width="1.5" opacity="0.5"/>
+              <line x1="6" y1="10" x2="14" y2="10" stroke="#8a9bb0" stroke-width="1.5" opacity="0.5"/>
+              <line x1="6" y1="13" x2="11" y2="13" stroke="#8a9bb0" stroke-width="1.5" opacity="0.5"/>
+            </svg>
+            <span class="select-text placeholder" id="selectText">Choose document type…</span>
+            <svg class="select-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <polyline points="4,6 8,10 12,6" stroke="#9a7b4f" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <!-- Dropdown is in normal document flow — pushes content down -->
+          <div class="select-dropdown" id="selectDropdown">
+            <div class="select-option" data-value="insurance" data-label="Insurance Denial">
+              <svg class="select-option-icon" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2L3 5V10C3 14 6.5 17.5 10 18.5C13.5 17.5 17 14 17 10V5L10 2Z" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="7" y1="10" x2="13" y2="10" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="10" y1="7" x2="10" y2="13" stroke="#9a7b4f" stroke-width="1.5"/>
+              </svg>
+              <span class="select-option-text">Insurance Denial</span>
+            </div>
+            <div class="select-option" data-value="eviction" data-label="Eviction Notice">
+              <svg class="select-option-icon" viewBox="0 0 20 20" fill="none">
+                <path d="M2 10L10 3L18 10" stroke="#9a7b4f" stroke-width="1.5"/>
+                <rect x="6" y="10" width="8" height="8" stroke="#9a7b4f" stroke-width="1.5"/>
+                <rect x="8.5" y="13" width="3" height="5" stroke="#9a7b4f" stroke-width="1"/>
+                <circle cx="15" cy="7" r="3" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="13.8" y1="5.8" x2="16.2" y2="8.2" stroke="#9a7b4f" stroke-width="1.5"/>
+              </svg>
+              <span class="select-option-text">Eviction Notice</span>
+            </div>
+            <div class="select-option" data-value="benefits" data-label="Benefits Rejection">
+              <svg class="select-option-icon" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2L2 6V11C2 15.4 5.6 18.8 10 19.5C14.4 18.8 18 15.4 18 11V6L10 2Z" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="7" y1="10" x2="13" y2="10" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="7" y1="7" x2="13" y2="13" stroke="#9a7b4f" stroke-width="1.5" opacity="0.7"/>
+                <line x1="13" y1="7" x2="7" y2="13" stroke="#9a7b4f" stroke-width="1.5" opacity="0.7"/>
+              </svg>
+              <span class="select-option-text">Benefits Rejection</span>
+            </div>
+            <div class="select-option" data-value="school" data-label="School Suspension">
+              <svg class="select-option-icon" viewBox="0 0 20 20" fill="none">
+                <polygon points="10,3 18,7 10,11 2,7" stroke="#9a7b4f" stroke-width="1.5" fill="none"/>
+                <path d="M5 8.5V14C5 14 7.2 17 10 17C12.8 17 15 14 15 14V8.5" stroke="#9a7b4f" stroke-width="1.5" fill="none"/>
+                <line x1="4" y1="4" x2="16" y2="16" stroke="#9a7b4f" stroke-width="1.5" opacity="0.5"/>
+              </svg>
+              <span class="select-option-text">School Suspension</span>
+            </div>
+            <div class="select-option" data-value="medical" data-label="Medical Bill">
+              <svg class="select-option-icon" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="2" width="14" height="16" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="7" y1="8" x2="13" y2="8" stroke="#9a7b4f" stroke-width="1"/>
+                <line x1="10" y1="5.5" x2="10" y2="10.5" stroke="#9a7b4f" stroke-width="1"/>
+                <line x1="6" y1="13" x2="11" y2="13" stroke="#9a7b4f" stroke-width="1" opacity="0.5"/>
+                <text x="12.5" y="15" font-family="DM Sans" font-size="5" fill="#9a7b4f" font-weight="500">$</text>
+              </svg>
+              <span class="select-option-text">Medical Bill</span>
+            </div>
+            <div class="select-option" data-value="credit" data-label="Credit Dispute">
+              <svg class="select-option-icon" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="5" width="16" height="11" stroke="#9a7b4f" stroke-width="1.5"/>
+                <line x1="2" y1="9" x2="18" y2="9" stroke="#9a7b4f" stroke-width="1.5"/>
+                <circle cx="6" cy="13" r="2" stroke="#9a7b4f" stroke-width="1"/>
+                <text x="11" y="15" font-family="DM Sans" font-size="6" fill="#9a7b4f" font-weight="500">?</text>
+              </svg>
+              <span class="select-option-text">Credit Dispute</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-block">
+        <span class="step-label"><span>02</span> — Paste Your Letter</span>
+        <div class="textarea-wrap">
+          <textarea id="letterInput" rows="10"
+            placeholder="Paste the full text of your letter here. The more detail you include, the stronger your appeal will be."></textarea>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <button class="example-btn" id="tryExampleBtn" onclick="toggleExample()">Try an Example →</button>
+          <div class="char-count"><span id="charCount">0</span> characters</div>
+        </div>
+        <div class="or-divider"><span>or</span></div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" accept=".pdf,.doc,.docx,.txt" id="fileInput">
+          <svg class="upload-icon" width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 22V10" stroke="#9a7b4f" stroke-width="1.5"/>
+            <polyline points="10,16 16,10 22,16" stroke="#9a7b4f" stroke-width="1.5" fill="none"/>
+            <path d="M6 24H26" stroke="#9a7b4f" stroke-width="1.5" opacity="0.5"/>
+            <rect x="4" y="4" width="24" height="24" stroke="#9a7b4f" stroke-width="1" opacity="0.2"/>
+          </svg>
+          <p class="upload-text">Upload a PDF</p>
+          <p class="upload-filename" id="uploadFilename"></p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-block">
+        <span class="step-label"><span>03</span> — Analyze</span>
+        <button class="analyze-btn" id="analyzeBtn" onclick="startAnalysis()">
+          <span id="btnText">Analyze My Letter</span>
+          <div class="loading-dots" id="loadingDots">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
+        <div class="privacy-note">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px">
+            <rect x="2" y="6" width="10" height="7" stroke="#8a9bb0" stroke-width="1.2"/>
+            <path d="M4 6V4.5C4 2.6 10 2.6 10 4.5V6" stroke="#8a9bb0" stroke-width="1.2" fill="none"/>
+            <circle cx="7" cy="9.5" r="1.5" stroke="#8a9bb0" stroke-width="1"/>
+          </svg>
+          This letter is never stored, sent, or saved. It exists only in your browser.
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col" id="rightCol">
+
+      <!-- Placeholder -->
+      <div class="placeholder-state" id="placeholderState">
+        <svg class="placeholder-doc" width="180" height="220" viewBox="0 0 180 220" fill="none">
+          <rect x="20" y="10" width="140" height="200" stroke="#ede8dc" stroke-width="1"/>
+          <rect x="20" y="10" width="140" height="32" fill="#ede8dc" opacity="0.3"/>
+          <line x1="30" y1="60" x2="150" y2="60" stroke="#ede8dc" stroke-width="1" opacity="0.4"/>
+          <line x1="30" y1="72" x2="150" y2="72" stroke="#ede8dc" stroke-width="1" opacity="0.3"/>
+          <line x1="30" y1="84" x2="130" y2="84" stroke="#ede8dc" stroke-width="1" opacity="0.3"/>
+          <line x1="30" y1="96" x2="140" y2="96" stroke="#ede8dc" stroke-width="1" opacity="0.25"/>
+          <line x1="30" y1="108" x2="120" y2="108" stroke="#ede8dc" stroke-width="1" opacity="0.25"/>
+          <line x1="30" y1="120" x2="150" y2="120" stroke="#ede8dc" stroke-width="1" opacity="0.2"/>
+          <line x1="30" y1="132" x2="150" y2="132" stroke="#ede8dc" stroke-width="1" opacity="0.2"/>
+          <line x1="30" y1="144" x2="110" y2="144" stroke="#ede8dc" stroke-width="1" opacity="0.2"/>
+          <line x1="30" y1="165" x2="90" y2="165" stroke="#ede8dc" stroke-width="1" opacity="0.15"/>
+          <line x1="30" y1="175" x2="100" y2="175" stroke="#ede8dc" stroke-width="1" opacity="0.15"/>
+        </svg>
+        <p class="placeholder-text">Your results will appear here.</p>
+      </div>
+
+      <!-- Scanner -->
+      <div class="scanner-wrap" id="scannerWrap">
+        <span class="scanner-label">Reading your document…</span>
+        <div class="scanner-track"><div class="scanner-line"></div></div>
+        <div class="scanner-doc-preview">
+          <svg width="120" height="150" viewBox="0 0 120 150" fill="none">
+            <rect x="10" y="10" width="100" height="130" stroke="#ede8dc" stroke-width="1"/>
+            <line x1="20" y1="35" x2="100" y2="35" stroke="#ede8dc" stroke-width="1" opacity="0.3"/>
+            <line x1="20" y1="48" x2="90" y2="48" stroke="#ede8dc" stroke-width="1" opacity="0.25"/>
+            <line x1="20" y1="60" x2="100" y2="60" stroke="#ede8dc" stroke-width="1" opacity="0.2"/>
+            <line x1="20" y1="72" x2="80" y2="72" stroke="#ede8dc" stroke-width="1" opacity="0.2"/>
+            <line x1="20" y1="90" x2="100" y2="90" stroke="#ede8dc" stroke-width="1" opacity="0.15"/>
+            <line x1="20" y1="102" x2="85" y2="102" stroke="#ede8dc" stroke-width="1" opacity="0.15"/>
+            <line x1="20" y1="120" x2="70" y2="120" stroke="#ede8dc" stroke-width="1" opacity="0.12"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-wrap" id="resultsWrap">
+        <!-- Dynamic badges -->
+        <div class="result-badges" id="resultBadges"></div>
+
+        <!-- Panel 1: Plain English -->
+        <div class="result-panel" id="panel1">
+          <div class="panel-header">
+            <span class="panel-label">What This Letter Means</span>
+            <div class="panel-actions">
+              <button class="copy-btn" onclick="copyPanel('panel1Content', this)" title="Copy text">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="5" y="5" width="9" height="9" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M2 11V2H11" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+              </button>
+              <button class="collapse-toggle" onclick="togglePanel('panel1Body')" title="Collapse">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <polyline points="3,5 7,9 11,5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="panel-body" id="panel1Body">
+            <p class="panel-text" id="panel1Content"></p>
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Panel 2: Flags -->
+        <div class="result-panel" id="panel2">
+          <div class="panel-header">
+            <span class="panel-label">Areas Worth Questioning</span>
+            <div class="panel-actions">
+              <button class="copy-btn" onclick="copyPanel('flagsText', this)" title="Copy text">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="5" y="5" width="9" height="9" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M2 11V2H11" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+              </button>
+              <button class="collapse-toggle" onclick="togglePanel('panel2Body')" title="Collapse">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <polyline points="3,5 7,9 11,5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="panel-body" id="panel2Body">
+            <div class="flag-list" id="flagList"></div>
+            <span id="flagsText" style="display:none"></span>
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <!-- Panel 3: Appeal Letter -->
+        <div class="result-panel panel-appeal" id="panel3">
+          <div class="panel-header">
+            <span class="panel-label">Your Draft Appeal Letter</span>
+            <div class="panel-actions">
+              <button class="collapse-toggle" onclick="togglePanel('panel3Body')" title="Collapse">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <polyline points="3,5 7,9 11,5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="panel-body" id="panel3Body">
+            <p class="letter-body" id="appealLetter"></p>
+          </div>
+          <div class="letter-actions">
+            <button class="btn-outline" onclick="copyPanel('appealLetter', this)">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="4" y="4" width="8" height="8" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2 10V2H10" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              </svg>
+              Copy Letter
+            </button>
+            <button class="btn-filled" onclick="downloadPDF()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M7 2V9" stroke="currentColor" stroke-width="1.2"/>
+                <polyline points="4,7 7,10 10,7" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                <line x1="2" y1="12" x2="12" y2="12" stroke="currentColor" stroke-width="1.2"/>
+              </svg>
+              Download as PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.analyzer-wrap -->
+
+  <script src="../src/config.js"></script>
+  <script src="../assets/js/analyzer-backend.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script>
+    /* ── Lenis smooth scroll ── */
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) {
+      try {
+        const lenis = new Lenis({
+          duration: 1.3,
+          easing: t => 1 - Math.pow(1 - t, 4),
+          smoothWheel: true,
+          wheelMultiplier: 0.85,
+        });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+      } catch(e) {}
+    }
+
+    /* ── Progress bar ── */
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }, { passive: true });
+
+    /* ── Custom cursor ── */
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = -200, my = -200, rx = -200, ry = -200;
+
+    window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function animateCursor() {
+      dot.style.transform = `translate(${mx - 3.5}px,${my - 3.5}px)`;
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.transform = `translate(${rx - 19}px,${ry - 19}px)`;
+      requestAnimationFrame(animateCursor);
+    })();
+
+    document.addEventListener('mousedown', () => ring.classList.add('clicking'));
+    document.addEventListener('mouseup', () => ring.classList.remove('clicking'));
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+
+    const hovers = document.querySelectorAll('a, button, .select-trigger, .select-option, .upload-zone, .context-item');
+    hovers.forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+    });
+
+    /* ── Entrance animations ── */
+    window.addEventListener('load', () => {
+      if (reduced) return;
+      setTimeout(() => { document.getElementById('statBar').classList.add('visible'); }, 100);
+      setTimeout(() => {
+        document.getElementById('leftCol').classList.add('visible');
+        document.getElementById('rightCol').classList.add('visible');
+      }, 300);
+      if (typeof gsap !== 'undefined') {
+        gsap.from('.form-block', {
+          opacity: 0, y: 18,
+          stagger: 0.12, duration: 0.7,
+          ease: 'power3.out', delay: 0.5
+        });
+        gsap.from('.left-header', {
+          opacity: 0, y: 16,
+          duration: 0.8, ease: 'power3.out', delay: 0.35
+        });
+      }
+    });
+
+    /* ── DROPDOWN — pure CSS max-height accordion, no JS positioning ── */
+    const trigger   = document.getElementById('selectTrigger');
+    const dropdown  = document.getElementById('selectDropdown');
+    const selectText = document.getElementById('selectText');
+    const triggerIcon = document.getElementById('triggerIcon');
+    let selectedValue = null;
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.classList.contains('open');
+      trigger.classList.toggle('open', !isOpen);
+      dropdown.classList.toggle('open', !isOpen);
+    });
+
+    document.addEventListener('click', () => {
+      trigger.classList.remove('open');
+      dropdown.classList.remove('open');
+    });
+
+    dropdown.addEventListener('click', e => e.stopPropagation());
+
+    document.querySelectorAll('.select-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const val   = opt.dataset.value;
+        const label = opt.dataset.label;
+        selectedValue = val;
+
+        const icon = opt.querySelector('.select-option-icon').cloneNode(true);
+        triggerIcon.replaceWith(icon);
+        icon.id = 'triggerIcon';
+        icon.className = 'select-icon';
+
+        selectText.textContent = label;
+        selectText.classList.remove('placeholder');
+
+        document.querySelectorAll('.select-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+
+        trigger.classList.remove('open');
+        dropdown.classList.remove('open');
+
+        trigger.classList.add('flash');
+        setTimeout(() => trigger.classList.remove('flash'), 500);
+
+        document.getElementById('navBadgeType').textContent = label;
+        document.getElementById('navBadge').classList.add('visible');
+      });
+    });
+
+    /* ── TEXTAREA ── */
+    const letterInput = document.getElementById('letterInput');
+    const charCount = document.getElementById('charCount');
+    letterInput.addEventListener('input', () => {
+      charCount.textContent = letterInput.value.length.toLocaleString();
+      letterInput.style.height = 'auto';
+      letterInput.style.height = letterInput.scrollHeight + 'px';
+    });
+
+    /* ── UPLOAD ZONE ── */
+    const uploadZone    = document.getElementById('uploadZone');
+    const fileInput     = document.getElementById('fileInput');
+    const uploadFilename = document.getElementById('uploadFilename');
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) {
+        uploadFilename.textContent = fileInput.files[0].name;
+        uploadFilename.classList.add('visible');
+      }
+    });
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) {
+        uploadFilename.textContent = e.dataTransfer.files[0].name;
+        uploadFilename.classList.add('visible');
+      }
+    });
+
+    /* ── TOAST ── */
+    function showToast(message) {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 2000);
+    }
+
+    /* ── COPY ── */
+    function copyPanel(id, btn) {
+      const el = document.getElementById(id);
+      navigator.clipboard.writeText(el.textContent).then(() => {
+        showToast('Copied to clipboard!');
+        const origHTML = btn.innerHTML;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="3,8 7,12 13,4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`;
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = origHTML; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+
+    /* ── PDF DOWNLOAD ── */
+    function downloadPDF() {
+      const text = document.getElementById('appealLetter').textContent;
+      if (!text || text.trim() === '') {
+        showToast('No letter to download yet!');
+        return;
+      }
+      const w = window.open('', '_blank');
+      if (!w) {
+        showToast('Please allow popups to download PDF');
+        return;
+      }
+      w.document.write(`<html><head><title>Appeal Letter — UnDenied</title>
+<style>body{font-family:Georgia,serif;max-width:680px;margin:60px auto;font-size:14px;line-height:1.9;color:#111;}pre{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.9;}@media print{body{margin:40px;}}</style></head><body><pre>${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre><script>window.onload=()=>window.print()<\/script></body></html>`);
+      w.document.close();
+      showToast('PDF opened in new window');
+    }
+
+    /* ── COLLAPSE ── */
+    function togglePanel(bodyId) {
+      document.getElementById(bodyId).classList.toggle('collapsed');
+    }
+
+    /* ── TRY EXAMPLE ── */
+    const tryExampleBtn = document.getElementById('tryExampleBtn');
+    let isExampleLoaded = false;
+    let exampleIndices = { insurance:0, eviction:0, benefits:0, school:0, medical:0, credit:0 };
+
+    const examples = {
+      insurance: [
+        { text: `Dear Member,
+
+After review of your claim submitted February 3rd 2026 for procedure code 27447 (Total Knee Arthroplasty), we have determined the requested procedure is not medically necessary under policy section 12.4(b). Your claim for $3,840 has been denied.
+
+Your policy requires documentation of failed conservative treatment for a minimum of 6 months. The medical records submitted indicate only 3 months of physical therapy. Additionally, the imaging studies provided do not demonstrate advanced degenerative joint disease as required under your plan's coverage criteria.
+
+You have 30 days from the date of this letter to submit an appeal. Please include any additional documentation you wish to be considered. If you have questions, call the number on your ID card.
+
+Sincerely,
+Medical Review Team
+Claim Reference: DEN-2026-00847` },
+        { text: `NOTICE OF CLAIM DENIAL
+
+Dear Ms. Johnson,
+
+This letter is to inform you that your claim for MRI of the lumbar spine (CPT 72148) submitted January 15, 2026 has been denied.
+
+Reason for Denial: Pre-authorization was not obtained prior to the procedure. Your plan requires prior authorization for all advanced imaging studies as outlined in your Summary Plan Description, Section 8.3.
+
+Amount Billed: $1,450
+Patient Responsibility: $1,450 (denied in full)
+
+You may appeal this decision within 180 days of receiving this notice. Please submit your appeal in writing to the address above, including any supporting documentation from your ordering physician.
+
+Sincerely,
+Claims Review Department
+Reference: PREAUTH-2026-1124` },
+        { text: `DENIAL NOTICE – PRESCRIPTION DRUG
+
+Dear Member,
+
+Your request for Humira (adalimumab) 40mg/0.8mL injection has been denied. This medication requires step therapy, meaning you must first try preferred alternatives before coverage can be approved.
+
+REASON: Your medical history does not show that you have tried and failed methotrexate or other preferred disease-modifying antirheumatic drugs (DMARDs) as required under your plan's formulary guidelines.
+
+You may request an exception if your prescribing physician believes the preferred alternatives would be harmful or ineffective for your condition. Please submit a letter of medical necessity from your physician.
+
+For questions, contact the Pharmacy Benefits Manager at the number on your ID card.
+
+Sincerely,
+Pharmacy Prior Authorization Team
+Rx Reference: STP-2026-00892` }
+      ],
+      eviction: [
+        { text: `THREE-DAY NOTICE TO PAY OR QUIT
+
+TO: Tenant at 1247 Maple Street, Apt 3B
+
+You are hereby notified that you have failed to pay rent of $1,200 due February 1st 2026 for the premises at the above address. As of this notice, the total amount due is $1,200 plus a late fee of $75.
+
+You have THREE (3) DAYS from service of this notice to pay the total amount of $1,275 or vacate the premises and deliver possession to the landlord. Failure to comply will result in legal proceedings being instituted against you to recover possession of said premises, damages, and costs of suit.
+
+PAYMENT MUST BE MADE IN CASH, CERTIFIED CHECK, OR MONEY ORDER to the undersigned at 1247 Maple Street, Apt 1A, between the hours of 9:00 AM and 5:00 PM, Monday through Friday.
+
+DATED: February 4, 2026
+
+Landlord: Oak Properties LLC` },
+        { text: `NOTICE TO VACATE – END OF LEASE
+
+Dear Tenant,
+
+This notice is to inform you that your lease for the premises at 2847 Oak Avenue, Unit 12, will terminate on March 31, 2026. The landlord has elected not to renew your lease.
+
+You are required to vacate the premises and remove all personal property by 11:59 PM on March 31, 2026. The unit must be returned in the same condition as when you took possession, reasonable wear and tear excepted.
+
+A move-out inspection will be conducted on March 30, 2026 at 10:00 AM. Your presence is requested. Your security deposit of $1,500 will be returned within 30 days of vacating, less any deductions for damages or unpaid rent.
+
+Failure to vacate by the specified date may result in legal action for unlawful detainer.
+
+Sincerely,
+Riverside Property Management` },
+        { text: `NOTICE OF LEASE VIOLATION
+
+Dear Mr. Rodriguez,
+
+This letter serves as formal notice that you are in violation of your lease agreement dated August 1, 2025 for the premises at 1560 Pine Street, Apt 4.
+
+VIOLATION: Unauthorized pet on premises. Your lease specifically prohibits pets without prior written consent from the landlord. Neighbors have reported a dog in your unit, and animal sounds have been documented.
+
+DEMAND: Remove the unauthorized animal from the premises within 7 days of this notice. Failure to cure this violation may result in termination of your lease and eviction proceedings.
+
+You have the right to respond to this notice in writing. If you believe this notice was issued in error, contact our office within 5 days.
+
+Dated: February 8, 2026
+
+Pine Street Holdings LLC` }
+      ],
+      benefits: [
+        { text: `NOTICE OF DENIAL - SUPPLEMENTAL SECURITY INCOME
+
+Your application for Supplemental Security Income (SSI) received January 15, 2026 has been reviewed and denied.
+
+REASON FOR DENIAL: Records indicate your countable resources exceed the allowable limit of $2,000 for an individual under federal guidelines section 416.1205. Our investigation revealed bank account balances totaling $4,850 as of December 2025 and a vehicle valued at $8,200. While one vehicle may be excluded, your combined countable resources total approximately $4,850, which exceeds the statutory limit.
+
+RIGHT TO APPEAL: You may request reconsideration within 60 days of receiving this notice. You have the right to be represented by an attorney or other qualified person. If your request is denied, you may request a hearing before an Administrative Law Judge.
+
+To appeal, complete Form SSA-561-U2 and mail to the address above, or call 1-800-772-1213.
+
+Social Security Administration
+Regional Office` },
+        { text: `NOTICE OF BENEFIT REDUCTION – SNAP PROGRAM
+
+Dear Recipient,
+
+Your Supplemental Nutrition Assistance Program (SNAP) benefits will be reduced effective March 1, 2026.
+
+REASON: Our records indicate your household income has increased. Based on your most recent reported earnings of $2,400/month, your benefit amount has been recalculated.
+
+PREVIOUS BENEFIT: $285/month
+NEW BENEFIT: $125/month
+
+If you disagree with this determination, you have 90 days from the date of this notice to request a fair hearing. You may continue to receive your previous benefit amount pending the hearing if you request it within 15 days.
+
+To request a hearing, call 1-888-555-0199 or submit a written request to the address above.
+
+Department of Human Services
+Benefit Determination Unit` },
+        { text: `DENIAL OF UNEMPLOYMENT INSURANCE BENEFITS
+
+Dear Claimant,
+
+Your claim for unemployment insurance benefits filed February 10, 2026 has been denied.
+
+DETERMINATION: You were discharged from your last employment for misconduct connected with your work. Specifically, your employer reported that you violated company policy regarding workplace safety, which constitutes misconduct under state law Section 296-7-3.
+
+You are not eligible to receive unemployment benefits for the period beginning February 10, 2026.
+
+APPEAL RIGHTS: You may appeal this determination within 30 days by filing a written appeal with the Employment Security Department. Your appeal must state the reasons you disagree with this determination.
+
+Mail appeals to: Employment Security Department, Appeals Division
+
+Employment Security Department
+Adjudication Unit` }
+      ],
+      school: [
+        { text: `NOTICE OF SUSPENSION
+
+Jefferson High School
+Student: Marcus Thompson, Grade 10
+Date: March 2, 2026
+
+Dear Parent/Guardian,
+
+This letter serves as official notification that your child has been suspended from Jefferson High School for 5 days effective immediately, March 2, 2026 through March 7, 2026.
+
+INCIDENT: Marcus was involved in a physical altercation with another student in the cafeteria during lunch period. Witnesses report that Marcus initiated contact by pushing another student. This constitutes a violation of the Student Code of Conduct, Section 4.2 (Physical Aggression - Level 3 Offense).
+
+CONSEQUENCES: 5-day out-of-school suspension. Marcus is not permitted on school grounds during this period. All assignments must be completed and submitted upon return.
+
+REQUIREMENT: You must contact the main office at (555) 234-5678 to schedule a re-entry meeting with the Dean of Students before Marcus may return to classes.
+
+Please note: A second Level 3 offense may result in recommendation for expulsion.
+
+Sincerely,
+Principal Janet Williams
+Jefferson High School Administration` },
+        { text: `NOTICE OF ACADEMIC PROBATION
+
+Dear Student,
+
+You have been placed on academic probation effective immediately.
+
+REASON: Your cumulative GPA has fallen below 2.0 for two consecutive semesters. Your current GPA is 1.72.
+
+CONSEQUENCES: You must meet with your academic advisor to develop an academic improvement plan within 10 business days. Failure to show satisfactory academic progress may result in academic suspension for the following semester.
+
+SUPPORT SERVICES: Tutoring is available at the Student Success Center. You are encouraged to utilize these resources.
+
+You have the right to appeal this decision to the Academic Standards Committee within 15 days if you believe there are mitigating circumstances.
+
+Sincerely,
+Dr. Robert Chen
+Dean of Academic Affairs` },
+        { text: `NOTICE OF EXPULSION HEARING
+
+Dear Parent/Guardian,
+
+This letter notifies you that your child, Emily Santos, is recommended for expulsion from Lincoln Middle School.
+
+CHARGE: Possession of a prohibited item on school grounds. On February 28, 2026, school officials discovered a vaping device in Emily's possession during a routine locker check. This violates the Student Code of Conduct, Section 5.1 (Prohibited Items - Level 4 Offense).
+
+HEARING: An expulsion hearing is scheduled for March 10, 2026 at 9:00 AM in the District Administration Building, Room 201. You have the right to be present, present evidence, and be represented by an attorney or advocate.
+
+If Emily has an IEP or 504 plan, a manifestation determination meeting will be held prior to the expulsion hearing.
+
+Please contact the Superintendent's Office at (555) 789-0123 with questions.
+
+Sincerely,
+Dr. Patricia Moore
+Superintendent` }
+      ],
+      medical: [
+        { text: `PATIENT STATEMENT - FINAL NOTICE
+
+Account #: 2026-88421
+Patient: Jane Doe
+Service Date: January 14, 2026
+
+Dear Patient,
+
+Your account balance of $12,480 is past due for services rendered at Memorial Hospital Emergency Department. Your insurance carrier, BlueCross Plan 447, has adjudicated this claim and determined these charges are your responsibility under your annual deductible.
+
+SERVICES BILLED:
+- Emergency Department Visit (Level 5): $1,200
+- CT Scan Abdomen/Pelvis: $3,200
+- Laboratory Services: $890
+- Surgical Procedure (Appendectomy): $6,500
+- Anesthesia Services: $690
+
+Total: $12,480
+
+Your Explanation of Benefits indicates you have not met your $5,000 annual deductible. Additionally, $7,480 has been applied to your coinsurance at 20%.
+
+PAYMENT DUE: Within 30 days to avoid transfer to collections.
+
+FINANCIAL ASSISTANCE: You may apply for our Charity Care program if your household income is below 400% of the federal poverty level. Applications are available at memorialhospital.org/financial-assistance.
+
+Memorial Hospital
+Patient Financial Services` },
+        { text: `SURPRISE BILLING NOTICE
+
+Dear Patient,
+
+You are receiving this notice because you received services from an out-of-network provider during your visit to City Medical Center on February 12, 2026.
+
+OUT-OF-NETWORK PROVIDER: Dr. Sarah Mitchell, Anesthesiology
+SERVICES: Anesthesia for laparoscopic gallbladder surgery
+AMOUNT BILLED: $4,200
+
+Your insurance paid $1,800 to Dr. Mitchell. The remaining balance of $2,400 would normally be your responsibility. However, under the No Surprises Act, you are protected from balance billing for emergency services and certain non-emergency services at in-network facilities.
+
+YOUR RESPONSIBILITY: You owe only what you would pay for in-network services: $400 (copay).
+
+You are not required to pay the $2,400 balance bill. If you have already paid more than your in-network cost-share, you may be entitled to a refund.
+
+To file a complaint or learn more, visit www.cms.gov/nosurprises.
+
+Patient Billing Department
+City Medical Center` },
+        { text: `ITEMIZED BILL – REQUEST FOR PAYMENT
+
+Account: 2026-44219
+Patient: Robert Chen
+Dates of Service: January 28-30, 2026
+
+Dear Mr. Chen,
+
+Enclosed is an itemized statement for your recent hospitalization at Riverside Medical Center.
+
+CHARGES:
+- Semi-private room (2 nights): $2,800
+- Nursing services: $1,200
+- Medications: $847
+- Laboratory work: $623
+- Radiology (chest X-ray): $289
+- Physical therapy (2 sessions): $480
+- Dietary services: $156
+- Operating room use: $3,200
+- Surgeon fee: $4,500
+- Anesthesia: $1,100
+- Recovery room: $890
+
+TOTAL: $16,085
+
+Insurance payment received: $9,650
+Patient responsibility: $6,435
+
+Payment plans available. Contact our billing office at (555) 234-8900 to arrange a payment schedule.
+
+Riverside Medical Center
+Revenue Cycle Department` }
+      ],
+      credit: [
+        { text: `DISPUTE INVESTIGATION RESULTS
+
+TransUnion Consumer Relations
+Case Number: INV-2026-442981
+
+Dear Consumer,
+
+We have completed our investigation of your dispute regarding the account appearing on your credit report.
+
+ACCOUNT INFORMATION:
+- Creditor: Capital One Bank
+- Account Number: XXXXX4471
+- Account Type: Credit Card
+- Balance: $2,340
+- Account Status: Charged-off
+
+INVESTIGATION FINDINGS:
+The furnisher of this information, Capital One Bank, has verified that the account information is accurate. The account was opened on March 15, 2022, with a credit limit of $5,000. The last reported payment was received on August 3, 2024. The account was charged off on December 28, 2024 due to non-payment.
+
+DOCUMENTATION PROVIDED:
+The furnisher provided a copy of the original cardholder agreement bearing your signature, dated March 15, 2022.
+
+RESULT: The information will remain on your credit report. If you disagree with this determination, you may add a 100-word consumer statement to your file explaining your position.
+
+To add a statement or request another investigation with additional documentation, call 1-800-916-8800.
+
+TransUnion Consumer Relations` },
+        { text: `NOTICE OF COLLECTION ACCOUNT
+
+Dear Consumer,
+
+This notice is to inform you that the below-referenced account has been placed with our agency for collection.
+
+CREDITOR: Midtown Medical Group
+ORIGINAL AMOUNT: $1,247
+CURRENT BALANCE: $1,247
+ACCOUNT NUMBER: XXXXX7823
+DATE OF SERVICE: September 15, 2025
+
+This debt will be reported to the credit reporting agencies as a collection account. To avoid negative reporting, please remit payment within 30 days.
+
+You have the right to dispute the validity of this debt within 30 days of receiving this notice. If you dispute the debt, we will obtain verification and mail it to you.
+
+National Collection Services
+Account Representative: Extension 442` },
+        { text: `CREDIT REPORT ALERT
+
+Dear Consumer,
+
+We are writing to notify you of a change to your credit file.
+
+NEW INQUIRY: On February 20, 2026, an inquiry was made on your credit file by:
+- Company: QuickLoan Financial
+- Type: Personal Loan Application
+- Permissible Purpose: Credit Application
+
+If you did not authorize this inquiry, it may indicate fraud. Please contact us immediately at 1-888-555-0199 to place a fraud alert on your file and dispute unauthorized activity.
+
+You are entitled to a free copy of your credit report. Visit annualcreditreport.com or call 1-877-322-8228.
+
+Equifax Information Services LLC
+Consumer Assistance Division` }
+      ]
+    };
+
+    function toggleExample() {
+      if (!isExampleLoaded) {
+        let type = selectedValue;
+        if (!type) {
+          document.querySelector('.select-option[data-value="insurance"]').click();
+          type = 'insurance';
+        }
+        const index = exampleIndices[type] % examples[type].length;
+        letterInput.value = examples[type][index].text;
+        exampleIndices[type]++;
+        isExampleLoaded = true;
+        tryExampleBtn.textContent = "Next Example →";
+        letterInput.dispatchEvent(new Event('input'));
+        letterInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const type = selectedValue || 'insurance';
+        const index = exampleIndices[type] % examples[type].length;
+        if (index === 0 && exampleIndices[type] > 0) {
+          letterInput.value = "";
+          isExampleLoaded = false;
+          tryExampleBtn.textContent = "Try an Example →";
+          exampleIndices[type] = 0;
+          letterInput.dispatchEvent(new Event('input'));
+        } else {
+          letterInput.value = examples[type][index].text;
+          exampleIndices[type]++;
+          letterInput.dispatchEvent(new Event('input'));
+        }
+      }
+    }
+
+    /* ── Result panel reveal ── */
+    function revealPanels() {
+      if (typeof gsap !== 'undefined') {
+        gsap.utils.toArray('.result-panel').forEach((panel, i) => {
+          panel.classList.add('visible');
+          gsap.fromTo(panel,
+            { opacity: 0, y: 24, x: 10 },
+            { opacity: 1, y: 0, x: 0, duration: 0.65, ease: 'power3.out', delay: i * 0.18 }
+          );
+        });
+      } else {
+        document.querySelectorAll('.result-panel').forEach(p => p.classList.add('visible'));
+      }
+    }
+
+    /* ── Tilt on result panels ── */
+    if (!reduced) {
+      const applyTilt = (selector) => {
+        document.querySelectorAll(selector).forEach(el => {
+          if (el.dataset.tiltApplied) return;
+          el.dataset.tiltApplied = 'true';
+          el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+          el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+          if (typeof gsap === 'undefined') return;
+          el.addEventListener('mousemove', e => {
+            if (e.target.closest('button, .copy-btn, textarea, input')) return;
+            const r = el.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width - 0.5;
+            const y = (e.clientY - r.top) / r.height - 0.5;
+            gsap.to(el, { rotateY: x * 5, rotateX: -y * 5, scale: 1.008, duration: 0.4, ease: 'power2.out', transformOrigin: 'center center', transformPerspective: 900 });
+          });
+          el.addEventListener('mouseleave', () => {
+            gsap.to(el, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.9, ease: 'elastic.out(1, 0.5)' });
+          });
+        });
+      };
+      applyTilt('.upload-zone');
+      new MutationObserver(() => { applyTilt('.result-panel'); })
+        .observe(document.getElementById('resultsWrap'), { childList: true, subtree: true, attributes: true });
+    }
+  </script>
+</body>
+</html>
