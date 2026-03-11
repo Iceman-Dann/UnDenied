@@ -14,7 +14,7 @@
 
 ---
 
-## 🚀 The TL;DR Story
+## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/rocket.svg" width="28" height="28" align="center"> The TL;DR Story
 * **The Spark:** As a student, I watched vulnerable people (families, elderly, immigrants) get bullied by corporate legal jargon they couldn't afford a lawyer to fight.
 * **The Obsession:** I spent countless late nights building a solution from absolute scratch. 
 * **The Hustle:** No template builders. No shortcuts. I hand-coded a cinematic UI in Vanilla JS/CSS and integrated Google's Gemini API with a custom Python backend.
@@ -22,7 +22,7 @@
 
 ---
 
-## 📝 Required Competition Questionnaire 
+## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/file-earmark-text.svg" width="28" height="28" align="center"> Required Competition Questionnaire 
 
 ### What is your startup idea?
 **UnDenied** instantly translates intimidating legal documents (insurance denials, eviction notices, medical bills) into plain-language, actionable appeal strategies using AI.
@@ -52,7 +52,7 @@ We automate the legal discovery process:
 
 ---
 
-## 📊 The Hard Proof: The "Denial Machine"
+## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/bar-chart-line.svg" width="28" height="28" align="center"> The Hard Proof: The "Denial Machine"
 
 ```mermaid
 pie title The Reality of Wrongful Denials (Source: ProPublica / KFF)
@@ -70,7 +70,7 @@ pie title If You Actually Fight Back...
 
 ---
 
-## 💻 Technical Implementation
+## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/laptop.svg" width="28" height="28" align="center"> Technical Implementation
 * **Frontend:** Hand-coded HTML5, CSS3, ES6+ JavaScript.
 * **Cinematics:** GSAP (3D animations) and D3.js (Interactive Data Viz).
 * **Backend:** Python (Flask/FastAPI) built for secure document processing.
@@ -81,13 +81,13 @@ pie title If You Actually Fight Back...
 
 ---
 
-## 🎥 Pitch & Demo
+## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/camera-video.svg" width="28" height="28" align="center"> Pitch & Demo
 * **[Watch my 5-Minute Pitch Video Here]** *(Replace with actual link)*
 * **[View the Deployed Web App Here]** *(Replace with actual link)*
 
 ---
 
-## 🏆 Scoring the Rubric
+## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/trophy.svg" width="28" height="28" align="center"> Scoring the Rubric
 
 | Criteria | Why UnDenied Wins |
 | :--- | :--- |
