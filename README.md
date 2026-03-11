@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/scale-balanced.svg" width="80" alt="Scale of Justice" />
+  <img src="https://api.iconify.design/fa6-solid/scale-balanced.svg?color=white" width="80" alt="Scale of Justice" />
   <h1>UnDenied</h1>
   <h3>The AI-Powered Legal Translator & Appeal Strategist</h3>
   <p><em>Official Submission for the <strong>Creator Colosseum Startup Competition</strong></em></p>
@@ -14,7 +14,7 @@
 
 ---
 
-## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/rocket.svg" width="28" height="28" align="center"> The TL;DR Story
+## <img src="https://api.iconify.design/bi/rocket.svg?color=white" width="28" height="28" align="center"> The TL;DR Story
 * **The Spark:** As a student, I watched vulnerable people (families, elderly, immigrants) get bullied by corporate legal jargon they couldn't afford a lawyer to fight.
 * **The Obsession:** I spent countless late nights building a solution from absolute scratch. 
 * **The Hustle:** No template builders. No shortcuts. I hand-coded a cinematic UI in Vanilla JS/CSS and integrated Google's Gemini API with a custom Python backend.
@@ -22,7 +22,7 @@
 
 ---
 
-## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/file-earmark-text.svg" width="28" height="28" align="center"> Required Competition Questionnaire 
+## <img src="https://api.iconify.design/bi/file-earmark-text.svg?color=white" width="28" height="28" align="center"> Required Competition Questionnaire 
 
 ### What is your startup idea?
 **UnDenied** instantly translates intimidating legal documents (insurance denials, eviction notices, medical bills) into plain-language, actionable appeal strategies using AI.
@@ -52,7 +52,7 @@ We automate the legal discovery process:
 
 ---
 
-## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/bar-chart-line.svg" width="28" height="28" align="center"> The Hard Proof: The "Denial Machine"
+## <img src="https://api.iconify.design/bi/bar-chart-line.svg?color=white" width="28" height="28" align="center"> The Hard Proof: The "Denial Machine"
 
 ```mermaid
 pie title The Reality of Wrongful Denials (Source: ProPublica / KFF)
@@ -70,7 +70,7 @@ pie title If You Actually Fight Back...
 
 ---
 
-## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/laptop.svg" width="28" height="28" align="center"> Technical Implementation
+## <img src="https://api.iconify.design/bi/laptop.svg?color=white" width="28" height="28" align="center"> Technical Implementation
 * **Frontend:** Hand-coded HTML5, CSS3, ES6+ JavaScript.
 * **Cinematics:** GSAP (3D animations) and D3.js (Interactive Data Viz).
 * **Backend:** Python (Flask/FastAPI) built for secure document processing.
@@ -81,13 +81,13 @@ pie title If You Actually Fight Back...
 
 ---
 
-## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/camera-video.svg" width="28" height="28" align="center"> Pitch & Demo
+## <img src="https://api.iconify.design/bi/camera-video.svg?color=white" width="28" height="28" align="center"> Pitch & Demo
 * **[Watch my 5-Minute Pitch Video Here]** *(Replace with actual link)*
 * **[View the Deployed Web App Here]** *(Replace with actual link)*
 
 ---
 
-## <img src="https://raw.githubusercontent.com/twbs/icons/main/icons/trophy.svg" width="28" height="28" align="center"> Scoring the Rubric
+## <img src="https://api.iconify.design/bi/trophy.svg?color=white" width="28" height="28" align="center"> Scoring the Rubric
 
 | Criteria | Why UnDenied Wins |
 | :--- | :--- |
