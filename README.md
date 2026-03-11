@@ -33,18 +33,18 @@ I didn't use a drag-and-drop website builder. I didn't rely on existing framewor
 
 ## <img src="https://api.iconify.design/bi/file-earmark-text.svg?color=white" width="28" height="28" align="center"> Competition Questionnaire 
 
-### 💡 What is your startup idea?
+### <img src="https://api.iconify.design/bi/lightbulb.svg?color=white" width="20" height="20" align="center" style="margin-right:8px;"> What is your startup idea?
 **UnDenied** is a civic-tech web application that instantly translates intimidating legal documents—like predatory medical bills, wrongful eviction notices, and bad-faith insurance denials—into actionable, jargon-free appeal strategies using AI.
 
-### 🚨 What is the problem you are solving and why it matters?
+### <img src="https://api.iconify.design/bi/exclamation-triangle.svg?color=white" width="20" height="20" align="center" style="margin-right:8px;"> What is the problem you are solving and why it matters?
 Corporations rely on "Appeal Fatigue." They know if they make the paperwork confusing enough, people will just pay the bill or walk away. 
-* 📉 **The Reality:** 80% of people give up immediately because they don't understand the letter.
-* 📈 **The Shocking Truth:** Of the 20% who *do* fight back, **up to 80% win their cases.** 
-* 📚 *(Sources backed by: ProPublica Healthcare Investigations, Kaiser Family Foundation (KFF), and the Consumer Financial Protection Bureau).*
+* <img src="https://api.iconify.design/bi/graph-down-arrow.svg?color=white" width="16" height="16" align="center" style="margin-right:6px;"> **The Reality:** 80% of people give up immediately because they don't understand the letter.
+* <img src="https://api.iconify.design/bi/graph-up-arrow.svg?color=white" width="16" height="16" align="center" style="margin-right:6px;"> **The Shocking Truth:** Of the 20% who *do* fight back, **up to 80% win their cases.** 
+* <img src="https://api.iconify.design/bi/journal-text.svg?color=white" width="16" height="16" align="center" style="margin-right:6px;"> *(Sources backed by: ProPublica Healthcare Investigations, Kaiser Family Foundation (KFF), and the Consumer Financial Protection Bureau).*
 
 This information asymmetry disproportionately hurts low-income families, immigrants, and the elderly. UnDenied exists to arm them.
 
-### ⚙️ What is your solution and how does it work?
+### <img src="https://api.iconify.design/bi/gear.svg?color=white" width="20" height="20" align="center" style="margin-right:8px;"> What is your solution and how does it work?
 We automate the legal discovery and strategy phase for the average consumer. 
 
 **The UnDenied Workflow:**
@@ -53,13 +53,13 @@ We automate the legal discovery and strategy phase for the average consumer.
 3. **Translate:** Outputs a highly-digestible, plain-language explanation of what the letter *actually* means.
 4. **Strategize:** Generates a custom, step-by-step tactical playbook on exactly how to fight back and win the appeal.
 
-### 💰 What is your execution and business plan?
+### <img src="https://api.iconify.design/bi/cash-stack.svg?color=white" width="20" height="20" align="center" style="margin-right:8px;"> What is your execution and business plan?
 My roadmap scales value from individuals up to enterprise organizations with zero friction:
 * **Phase 1: Validation & Data (Current):** A live, free public beta. The goal is to gather proprietary, anonymized data on systemic regional denial patterns while building massive consumer trust.
 * **Phase 2: B2C Freemium:** Translation remains permanently free. I will introduce a $5-$10 premium tier that auto-generates formally formatted, ready-to-mail legal complaint drafts.
 * **Phase 3: B2B Enterprise Licensing:** White-label the UnDenied API and license my anonymized denial data to consumer advocacy groups, labor unions, and NGOs for recurring B2B revenue.
 
-### 🎯 Identification of your target market
+### <img src="https://api.iconify.design/bi/bullseye.svg?color=white" width="20" height="20" align="center" style="margin-right:8px;"> Identification of your target market
 * **Primary Focus:** Patients fighting predatory medical debt (an **$88 Billion** market in the US alone).
 * **Secondary:** Tenants facing complex lease disputes, unjust fines, or evictions.
 * **Tertiary:** Citizens navigating wrongful government benefit rejections (Unemployment, SNAP).
@@ -115,9 +115,9 @@ pie title If You Actually Fight Back...
 
 ## <img src="https://api.iconify.design/bi/camera-video.svg?color=white" width="28" height="28" align="center"> Pitch & Demo
 
-* 📺 **[Watch my 5-Minute Pitch Video Here]** *(Replace with actual link)*
-* 🚀 **[View the Deployed Web App Here]** *(Replace with actual link)*
-* 💻 **[Link to GitHub Repository]** *(Replace with actual link)*
+* <img src="https://api.iconify.design/bi/display.svg?color=white" width="16" height="16" align="center" style="margin-right:6px;"> **[Watch my 5-Minute Pitch Video Here]** *(Replace with actual link)*
+* <img src="https://api.iconify.design/bi/rocket-takeoff.svg?color=white" width="16" height="16" align="center" style="margin-right:6px;"> **[View the Deployed Web App Here]** *(Replace with actual link)*
+* <img src="https://api.iconify.design/bi/pc-display.svg?color=white" width="16" height="16" align="center" style="margin-right:6px;"> **[Link to GitHub Repository]** *(Replace with actual link)*
 
 ---
 
