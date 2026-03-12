@@ -7,11 +7,15 @@ class DocumentAnalyzer {
     this.apiUrl = CONFIG.GEMINI_API_URL;
   }
 
-  async analyzeDocument(documentType, letterText) {
+  async analyzeDocument(documentType, letterText, fileData = null) {
     try {
       // Validate inputs
-      if (!documentType || !letterText || letterText.trim().length < 50) {
-        throw new Error('Please select a document type and paste your complete letter text.');
+      if (!documentType || (!letterText && !fileData)) {
+        throw new Error('Please select a document type and provide your letter.');
+      }
+
+      if (!fileData && letterText.trim().length < 50) {
+        throw new Error('Please paste the complete text of your letter (minimum 50 characters).');
       }
 
       // Get the appropriate system prompt
@@ -40,12 +44,23 @@ DATE RULES:
 - If the denial letter mentions an appeal deadline window (e.g., "180 days"), calculate the actual deadline from the letter date found in the text
 - All deadlines in your appeal letter MUST use the exact dates provided above`;
 
+      const parts = [
+        { text: `${systemPrompt}${dateContext}\n\nHere is the document to analyze:\n\n${letterText}` }
+      ];
+
+      if (fileData) {
+        parts.push({
+          inlineData: {
+            mimeType: fileData.mimeType,
+            data: fileData.data
+          }
+        });
+      }
+
       // Prepare the request
       const requestBody = {
         contents: [{
-          parts: [{
-            text: `${systemPrompt}${dateContext}\n\nHere is the letter to analyze:\n\n${letterText}`
-          }]
+          parts: parts
         }],
         generationConfig: {
           temperature: 0.3,
@@ -179,6 +194,10 @@ async function startAnalysis() {
   const btnText = document.getElementById('btnText');
   const dots = document.getElementById('loadingDots');
   const letterInput = document.getElementById('letterInput');
+  const fileInput = document.getElementById('fileInput');
+
+  const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+  const letterText = letterInput ? letterInput.value.trim() : '';
 
   // Validate inputs
   if (!selectedValue) {
@@ -186,9 +205,9 @@ async function startAnalysis() {
     return;
   }
 
-  if (!letterInput.value.trim() || letterInput.value.trim().length < 50) {
-    alert('Please paste the complete text of your letter (minimum 50 characters).');
-    letterInput.focus();
+  if (!file && letterText.length < 50) {
+    alert('Please upload a document or paste the complete text of your letter (minimum 50 characters).');
+    if (letterInput) letterInput.focus();
     return;
   }
 
@@ -211,8 +230,32 @@ async function startAnalysis() {
   try {
     console.log('Starting analysis...');
     
+    let fileData = null;
+    if (file) {
+      try {
+        const base64Str = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        fileData = {
+          data: base64Str.split(',')[1],
+          mimeType: file.type || 'application/pdf'
+        };
+      } catch (err) {
+        alert('Failed to read the uploaded document.');
+        scanner.classList.remove('active');
+        document.getElementById('placeholderState').classList.remove('hidden');
+        btn.disabled = false;
+        btnText.style.display = '';
+        dots.classList.remove('active');
+        return;
+      }
+    }
+
     // Call the analyzer
-    const results = await analyzer.analyzeDocument(selectedValue, letterInput.value);
+    const results = await analyzer.analyzeDocument(selectedValue, letterText, fileData);
     console.log('Analysis completed, results:', results);
 
     // Hide scanner
