@@ -2,7 +2,8 @@
   <img src="https://api.iconify.design/fa6-solid/scale-balanced.svg?color=white" width="100" alt="Scale of Justice" />
   <h1>UnDenied</h1>
   <h3>The AI-Powered Legal Translator & Appeal Strategist</h3>
-  <p><em>Official Submission for the <strong>Creator Colosseum Startup Competition</strong></em></p>
+  <p><em>Official Submission for <strong><a href="https://quantumsprint.devpost.com/">Quantum Sprint</a></strong> · <strong><a href="https://impacthacks.devpost.com/">Impact Hacks</a></strong> · <strong><a href="https://creatorcolosseumcompetition26.devpost.com/">Creator Colosseum</a></strong></em></p>
+  <p><em>⚡ Built from scratch in <strong>20 days</strong> by a solo student founder</em></p>
 
   <!-- Badges -->
   <p>
@@ -27,7 +28,7 @@
 > **The Solution:** UnDenied takes that jargon and instantly translates it into a plain-language, step-by-step tactical appeal strategy using cutting-edge AI.
 
 ### The Hustle Behind the Code
-I didn't use a drag-and-drop website builder. I didn't rely on existing frameworks. Driven by the mission to stop vulnerable people from being bullied by bureaucracy, I spent countless late nights teaching myself to hand-code a cinematic UI in pure Vanilla JS and CSS, integrating it with a custom Python backend and Google's Gemini API from absolute scratch.
+I built this in **20 days**. Not a semester. Not a quarter. 20 days — after school, through late nights, with zero budget and zero team. I didn't use a drag-and-drop website builder or existing frameworks. Driven by the mission to stop vulnerable people from being bullied by bureaucracy, I hand-coded a cinematic UI in pure Vanilla JS and CSS, engineered a custom Python backend, and integrated Google's Gemini API from absolute scratch.
 
 ---
 
@@ -125,7 +126,7 @@ pie title If You Actually Fight Back...
 
 | Core Competencies | Why UnDenied Maximizes the Rubric |
 | :--- | :--- |
-| **Effort and Work Ethic (40%)** | Built entirely from scratch by a solo student founder. I hand-coded the cinematic UI (bypassing templates), engineered a custom Python backend, and natively integrated live AI. The code density and complexity serve as highly measurable proof of effort. |
+| **Effort and Work Ethic (40%)** | Built entirely from scratch **in 20 days** by a solo student founder. I hand-coded the cinematic UI (bypassing templates), engineered a custom Python backend, and natively integrated live AI. The code density and complexity serve as highly measurable proof of effort. |
 | **Feasibility & Execution (25%)** | This is a live, functioning application—not a Figma prototype. The 3-phase execution roadmap requires incredibly low overhead while simultaneously scaling into a highly viable Enterprise SaaS model. |
 | **Potential Impact (25%)** | Directly attacks the massive "$88 Billion Med Debt" asymmetry. UnDenied provides fast, free, actionable translation that literally saves the most vulnerable users thousands of dollars and immense emotional distress. |
 | **Communication & Clarity (10%)** | The entire product thesis *is* clarity. Both the application's clean UX and this pitch documentation are designed to instantly communicate complex systemic problems to non-experts. |
