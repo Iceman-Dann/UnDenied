@@ -4,11 +4,11 @@
   <h3>The AI-Powered Legal Translator & Appeal Strategist</h3>
   <p>
     <em>Official Submission for</em><br>
-    <strong><a href="https://quantumsprint.devpost.com/">⚡ Quantum Sprint</a></strong> &nbsp;·&nbsp;
-    <strong><a href="https://impacthacks.devpost.com/">🌍 ImpactHacks</a></strong> &nbsp;·&nbsp;
-    <strong><a href="https://creatorcolosseumcompetition26.devpost.com/">🏛️ Creator Colosseum</a></strong>
+    <strong><a href="https://quantumsprint.devpost.com/"><img src="https://api.iconify.design/bi/lightning-charge-fill.svg?color=white" width="14" height="14" align="center" /> Quantum Sprint</a></strong> &nbsp;·&nbsp;
+    <strong><a href="https://impacthacks.devpost.com/"><img src="https://api.iconify.design/bi/globe.svg?color=white" width="14" height="14" align="center" /> ImpactHacks</a></strong> &nbsp;·&nbsp;
+    <strong><a href="https://creatorcolosseumcompetition26.devpost.com/"><img src="https://api.iconify.design/bi/building-fill.svg?color=white" width="14" height="14" align="center" /> Creator Colosseum</a></strong>
   </p>
-  <p><em>⚡ Built entirely from scratch in <strong>20 days</strong> by a solo student founder</em></p>
+  <p><em><img src="https://api.iconify.design/bi/stopwatch-fill.svg?color=white" width="14" height="14" align="center" /> Built entirely from scratch in <strong>20 days</strong> by a solo student founder</em></p>
 
   <!-- Badges -->
   <p>
@@ -28,7 +28,7 @@
 
 ---
 
-## 🧨 The Problem That Made This Necessary
+## <img src="https://api.iconify.design/bi/exclamation-triangle-fill.svg?color=white" width="28" height="28" align="center"> The Problem That Made This Necessary
 
 Every year, **hundreds of millions of legal letters** are sent to ordinary people — insurance denials, eviction notices, benefits rejections, medical bills — written by corporate lawyers whose sole job is to make the recipient give up.
 
@@ -43,21 +43,21 @@ This isn't a broken system. It's a system working exactly as designed — agains
 
 ---
 
-## 🚀 The Solution — What UnDenied Does
+## <img src="https://api.iconify.design/bi/rocket-takeoff-fill.svg?color=white" width="28" height="28" align="center"> The Solution — What UnDenied Does
 
 UnDenied is a **civic-tech AI web application** that takes any intimidating legal letter and instantly translates it into:
 
-1. ✅ **A plain-English explanation** of what the letter actually means
-2. ✅ **Flagged rights violations** the sender hoped you wouldn't notice
-3. ✅ **Hidden deadlines** buried in legalese
-4. ✅ **A step-by-step appeal strategy** — exactly what to write, send, and say
-5. ✅ **Areas worth legally questioning** in the original determination
+1. <img src="https://api.iconify.design/bi/check-circle-fill.svg?color=white" width="14" height="14" align="center" /> **A plain-English explanation** of what the letter actually means
+2. <img src="https://api.iconify.design/bi/check-circle-fill.svg?color=white" width="14" height="14" align="center" /> **Flagged rights violations** the sender hoped you wouldn't notice
+3. <img src="https://api.iconify.design/bi/check-circle-fill.svg?color=white" width="14" height="14" align="center" /> **Hidden deadlines** buried in legalese
+4. <img src="https://api.iconify.design/bi/check-circle-fill.svg?color=white" width="14" height="14" align="center" /> **A step-by-step appeal strategy** — exactly what to write, send, and say
+5. <img src="https://api.iconify.design/bi/check-circle-fill.svg?color=white" width="14" height="14" align="center" /> **Areas worth legally questioning** in the original determination
 
 **Zero account. Zero data stored. Zero cost. It runs entirely in the browser — your letter never leaves your device.**
 
 ---
 
-## ⚡ Built in 20 Days — The Honest Timeline
+## <img src="https://api.iconify.design/bi/stopwatch-fill.svg?color=white" width="28" height="28" align="center"> Built in 20 Days — The Honest Timeline
 
 This was not a class project. It was not a team effort or a weekend hackathon with five people.
 
@@ -74,7 +74,7 @@ Every line of code written by hand. No drag-and-drop. No AI-generated boilerplat
 
 ---
 
-## 🌍 Real-World Impact
+## <img src="https://api.iconify.design/bi/people-fill.svg?color=white" width="28" height="28" align="center"> Real-World Impact
 
 UnDenied targets one of the most systemic inequities in daily American life:
 
@@ -91,7 +91,7 @@ UnDenied makes the playing field equal. **Free. Forever.**
 
 ---
 
-## 💡 Innovation & Originality
+## <img src="https://api.iconify.design/bi/lightbulb-fill.svg?color=white" width="28" height="28" align="center"> Innovation & Originality
 
 Most "legal AI" tools are:
 - Expensive subscription services ($50–$300/month)
@@ -106,7 +106,7 @@ Most "legal AI" tools are:
 
 ---
 
-## 🛠️ Technical Architecture
+## <img src="https://api.iconify.design/bi/diagram-3-fill.svg?color=white" width="28" height="28" align="center"> Technical Architecture
 
 ```
 User (Browser Only)
@@ -152,7 +152,7 @@ graph TD
 
 ---
 
-## 🧱 Tech Stack
+## <img src="https://api.iconify.design/bi/laptop-fill.svg?color=white" width="28" height="28" align="center"> Tech Stack
 
 ### Frontend
 <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" /> <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" /> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" /> <img src="https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white" /> <img src="https://img.shields.io/badge/D3.js-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white" />
@@ -167,7 +167,7 @@ graph TD
 
 ---
 
-## 📈 Scalability & Business Model
+## <img src="https://api.iconify.design/bi/graph-up-arrow.svg?color=white" width="28" height="28" align="center"> Scalability & Business Model
 
 UnDenied is production-ready today. The path to scale is clear and low-overhead:
 
@@ -184,7 +184,7 @@ White-label API + anonymized denial data licensed to consumer advocacy groups, l
 
 ---
 
-## 🏆 Judging Criteria — How UnDenied Scores
+## <img src="https://api.iconify.design/bi/trophy-fill.svg?color=white" width="28" height="28" align="center"> Judging Criteria — How UnDenied Scores
 
 <table>
 <thead>
@@ -192,7 +192,7 @@ White-label API + anonymized denial data licensed to consumer advocacy groups, l
 </thead>
 <tbody>
 <tr>
-  <td rowspan="4"><strong><a href="https://quantumsprint.devpost.com/">⚡ Quantum Sprint</a></strong></td>
+  <td rowspan="4"><strong><a href="https://quantumsprint.devpost.com/"><img src="https://api.iconify.design/bi/lightning-charge-fill.svg?color=white" width="14" height="14" align="center" /> Quantum Sprint</a></strong></td>
   <td>Technical Execution</td>
   <td>Hand-coded full-stack system: custom Gemini prompt architecture, Flask serverless backend, D3.js 50-state map, GSAP cinematic frontend. Zero boilerplate.</td>
 </tr>
@@ -209,7 +209,7 @@ White-label API + anonymized denial data licensed to consumer advocacy groups, l
   <td>Cinematic UI, 5-page site, interactive data viz. Not a prototype — a polished, deployed product a real person can use today.</td>
 </tr>
 <tr>
-  <td rowspan="4"><strong><a href="https://impacthacks.devpost.com/">🌍 ImpactHacks</a></strong></td>
+  <td rowspan="4"><strong><a href="https://impacthacks.devpost.com/"><img src="https://api.iconify.design/bi/globe.svg?color=white" width="14" height="14" align="center" /> ImpactHacks</a></strong></td>
   <td>Impact (30%)</td>
   <td>Directly attacks the $88B wrongful denial industry. Helps the most vulnerable: low-income families, elderly, immigrants. Quantified, measurable problem with real-world citations.</td>
 </tr>
@@ -226,7 +226,7 @@ White-label API + anonymized denial data licensed to consumer advocacy groups, l
   <td>Premium cinematic site, structured README, clear submission. Problem, solution, tech stack, and impact are communicated instantly.</td>
 </tr>
 <tr>
-  <td rowspan="4"><strong><a href="https://creatorcolosseumcompetition26.devpost.com/">🏛️ Creator Colosseum</a></strong></td>
+  <td rowspan="4"><strong><a href="https://creatorcolosseumcompetition26.devpost.com/"><img src="https://api.iconify.design/bi/building-fill.svg?color=white" width="14" height="14" align="center" /> Creator Colosseum</a></strong></td>
   <td>Effort & Work Ethic (40%)</td>
   <td>20 days, solo founder, 5 pages, full-stack backend, AI integration, data viz, cinematic UI — all hand-coded. The git history and code depth are measurable proof.</td>
 </tr>
@@ -247,17 +247,17 @@ White-label API + anonymized denial data licensed to consumer advocacy groups, l
 
 ---
 
-## 🔗 Links
+## <img src="https://api.iconify.design/bi/link-45deg.svg?color=white" width="28" height="28" align="center"> Links
 
 | Resource | Link |
 |---|---|
-| 🌐 Live Application | *(Vercel URL — add before submission)* |
-| 💻 GitHub Repository | [github.com/Iceman-Dann/UnDenied](https://github.com/Iceman-Dann/UnDenied) |
-| 🎥 Demo Video | *(Add before submission)* |
+| <img src="https://api.iconify.design/bi/globe.svg?color=white" width="14" height="14" align="center" /> Live Application | *(Vercel URL — add before submission)* |
+| <img src="https://api.iconify.design/bi/github.svg?color=white" width="14" height="14" align="center" /> GitHub Repository | [github.com/Iceman-Dann/UnDenied](https://github.com/Iceman-Dann/UnDenied) |
+| <img src="https://api.iconify.design/bi/camera-video-fill.svg?color=white" width="14" height="14" align="center" /> Demo Video | *(Add before submission)* |
 
 ---
 
-## 📋 Submission Checklist
+## <img src="https://api.iconify.design/bi/clipboard2-check-fill.svg?color=white" width="28" height="28" align="center"> Submission Checklist
 
 - [x] Functional live project (Web + AI + SaaS)
 - [x] Public GitHub repository with full commit history
@@ -272,6 +272,6 @@ White-label API + anonymized denial data licensed to consumer advocacy groups, l
 
 ---
 
-## ⚖️ Legal Disclaimer
+## <img src="https://api.iconify.design/fa6-solid/scale-balanced.svg?color=white" width="20" height="20" align="center"> Legal Disclaimer
 
 UnDenied provides information only, not legal advice. Data sourced from CMS Public Use Files, ProPublica Healthcare Investigations, Kaiser Family Foundation, and state insurance commission reports.
